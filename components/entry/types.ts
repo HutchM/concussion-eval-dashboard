@@ -29,6 +29,7 @@ export interface EntryFormValues {
 
   // Exertional — structured 4-stage protocol
   stopReason: StopReason;
+  immediateMemory: { trial1: string; trial2: string; trial3: string };
   exertionalNotes?: string;
   // Stages 1–3: keyed by stageId, then taskName
   exertionalTasks: Record<string, Record<string, ExertionalTaskEntry>>;

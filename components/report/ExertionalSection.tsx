@@ -77,6 +77,51 @@ export function ExertionalSection({ exertional }: Props) {
               </h4>
             </div>
 
+            {/* Immediate Memory — Stage 1 */}
+            {stage.immediateMemory && (
+              <div className="px-4 pt-3 pb-1">
+                <div className="rounded-lg bg-white border border-blue-100 p-4">
+                  <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Immediate Memory — 3 Trials</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400">Total Score</p>
+                      <p className={clsx("text-2xl font-bold",
+                        stage.immediateMemory.totalScore >= 30 ? "text-emerald-600" :
+                        stage.immediateMemory.totalScore >= 24 ? "text-amber-600" : "text-red-600"
+                      )}>
+                        {stage.immediateMemory.totalScore}
+                        <span className="text-sm font-normal text-gray-400">/36</span>
+                      </p>
+                    </div>
+                  </div>
+                  {/* Word list */}
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-1 mb-3">
+                    {stage.immediateMemory.words.map((word, i) => (
+                      <div key={word} className="flex items-center gap-1 bg-gray-50 rounded px-2 py-1">
+                        <span className="text-xs text-gray-400 w-4 shrink-0">{i + 1}.</span>
+                        <span className="text-xs font-medium text-gray-700">{word}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Trial scores */}
+                  <div className="flex gap-6">
+                    {[
+                      { label: "Trial 1", score: stage.immediateMemory.trial1 },
+                      { label: "Trial 2", score: stage.immediateMemory.trial2 },
+                      { label: "Trial 3", score: stage.immediateMemory.trial3 },
+                    ].map(({ label, score }) => (
+                      <div key={label} className="text-center">
+                        <p className="text-xs text-gray-400 uppercase tracking-wide">{label}</p>
+                        <p className="text-xl font-bold text-gray-800">{score}<span className="text-sm font-normal text-gray-400">/12</span></p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {stage.tasks.length > 0 ? (
               <table className="w-full text-sm">
                 <thead>

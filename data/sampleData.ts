@@ -1,6 +1,6 @@
 import type { Evaluation } from "@/types";
 import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults, buildVOMSTestResult } from "@/lib/scoring";
-import { SYMPTOM_LIST } from "@/types";
+import { SYMPTOM_LIST, IMMEDIATE_MEMORY_WORDS } from "@/types";
 
 // Helper to build a zeroed symptom scores object
 function zeroScores() {
@@ -40,6 +40,7 @@ const eval1Exertional = calculateExertionalResults({
   stages: [
     {
       stageId: 1, stageName: "Cardiovascular Load",
+      immediateMemory: { words: [...IMMEDIATE_MEMORY_WORDS], trial1: 7, trial2: 9, trial3: 9, totalScore: 25 },
       tasks: [
         { task: "Squats",     rpe: 9,  symptomScore: 0 },
         { task: "Lunges",     rpe: 10, symptomScore: 0 },
@@ -113,6 +114,7 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
       stages: [
         {
           stageId: 1, stageName: "Cardiovascular Load",
+          immediateMemory: { words: [...IMMEDIATE_MEMORY_WORDS], trial1: 10, trial2: 11, trial3: 12, totalScore: 33 },
           tasks: [
             { task: "Squats",     rpe: 8,  symptomScore: 0 },
             { task: "Lunges",     rpe: 9,  symptomScore: 0 },

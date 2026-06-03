@@ -119,6 +119,21 @@ export interface HRDataPoint {
   hr: number;   // bpm
 }
 
+// ─── Immediate Memory (Stage 1) ───────────────────────────────────────────────
+
+export interface ImmediateMemoryResult {
+  words: string[];        // 12 words used
+  trial1: number;         // score 0–12
+  trial2: number;
+  trial3: number;
+  totalScore: number;     // max 36
+}
+
+export const IMMEDIATE_MEMORY_WORDS = [
+  "Elbow", "Apple", "Carpet", "Saddle", "Bubble", "Squirrel",
+  "Perfume", "Sunset", "Iron", "Candle", "Finger", "Insect",
+] as const;
+
 export interface ExertionalStageResult {
   stageId: number;
   stageName: string;
@@ -127,6 +142,8 @@ export interface ExertionalStageResult {
   rpe?: number;
   symptomScore?: number;
   notes?: string;
+  // Stage 1 only
+  immediateMemory?: ImmediateMemoryResult;
 }
 
 export type StopReason =

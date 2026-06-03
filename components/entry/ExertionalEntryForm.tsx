@@ -1,7 +1,7 @@
 "use client";
 import { UseFormRegister, useWatch, Control, UseFormWatch, UseFormSetValue } from "react-hook-form";
 import { useRef, useState } from "react";
-import { EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES, HRDataPoint } from "@/types";
+import { EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES, IMMEDIATE_MEMORY_WORDS, HRDataPoint } from "@/types";
 import type { EntryFormValues } from "./types";
 import { clsx } from "clsx";
 
@@ -64,6 +64,11 @@ function parseHRFile(text: string): HRDataPoint[] {
 export function ExertionalEntryForm({ register, control, watch, setValue, onHRFileLoaded, hrFileName }: Props) {
   const tasks = useWatch({ control, name: "exertionalTasks" }) ?? {};
   const stage4 = useWatch({ control, name: "exertionalStage4" }) ?? {};
+  const imTrials = useWatch({ control, name: "immediateMemory" }) ?? {};
+  const t1 = Math.min(12, Math.max(0, Number(imTrials.trial1) || 0));
+  const t2 = Math.min(12, Math.max(0, Number(imTrials.trial2) || 0));
+  const t3 = Math.min(12, Math.max(0, Number(imTrials.trial3) || 0));
+  const imTotal = t1 + t2 + t3;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileError, setFileError] = useState<string | null>(null);
 
@@ -143,6 +148,56 @@ export function ExertionalEntryForm({ register, control, watch, setValue, onHRFi
               </tbody>
             </table>
           </div>
+
+          {/* Immediate Memory — Stage 1 only */}
+          {stageDef.id === 1 && (
+            <div className="mx-4 mb-4 rounded-lg border border-blue-200 bg-white p-4">
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <div>
+                  <h5 className="text-sm font-semibold text-gray-800">Immediate Memory — 3 Trials</h5>
+                  <p className="text-xs text-gray-500 mt-0.5">Read the 12 words aloud. Ask the patient to repeat back as many as possible. Score each trial out of 12.</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-xs text-gray-400 uppercase tracking-wide">Total</p>
+                  <p className={clsx("text-2xl font-bold", imTotal >= 30 ? "text-emerald-600" : imTotal >= 24 ? "text-amber-600" : imTotal > 0 ? "text-red-600" : "text-gray-300")}>
+                    {imTotal}<span className="text-sm font-normal text-gray-400">/36</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Word list */}
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 mb-4">
+                {IMMEDIATE_MEMORY_WORDS.map((word, i) => (
+                  <div key={word} className="flex items-center gap-1.5 bg-gray-50 rounded-md px-2 py-1">
+                    <span className="text-xs text-gray-400 w-4 shrink-0">{i + 1}.</span>
+                    <span className="text-xs font-medium text-gray-700">{word}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Trial scores */}
+              <div className="grid grid-cols-3 gap-3">
+                {([1, 2, 3] as const).map((trial) => (
+                  <div key={trial}>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                      Trial {trial}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        max="12"
+                        {...register(`immediateMemory.trial${trial}` as const)}
+                        placeholder="0"
+                        className={clsx(inputCls, "w-20")}
+                      />
+                      <span className="text-sm text-gray-400">/ 12</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       ))}
 

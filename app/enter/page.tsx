@@ -11,7 +11,7 @@ import { ExertionalEntryForm } from "@/components/entry/ExertionalEntryForm";
 import { Card } from "@/components/ui/Card";
 import { useEvaluationStore } from "@/store/evaluationStore";
 import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults, calcDaysSinceInjury, buildVOMSTestResult } from "@/lib/scoring";
-import { SYMPTOM_LIST, VOMS_TESTS, EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES } from "@/types";
+import { SYMPTOM_LIST, VOMS_TESTS, EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES, IMMEDIATE_MEMORY_WORDS } from "@/types";
 import type { SymptomScores, VOMSTestResult, ExertionalStageResult, HRDataPoint } from "@/types";
 import { clsx } from "clsx";
 
@@ -48,6 +48,7 @@ export default function EnterPage() {
       stopReason: "Protocol complete",
       exertionalTasks: {},
       exertionalStage4: { rpe: "", symptomScore: "", notes: "" },
+      immediateMemory: { trial1: "", trial2: "", trial3: "" },
     },
   });
 
@@ -78,10 +79,22 @@ export default function EnterPage() {
       return buildVOMSTestResult(test, pre, post, npcDistance);
     });
 
+    // Build immediate memory result for Stage 1
+    const im = data.immediateMemory;
+    const t1 = Math.min(12, Math.max(0, Number(im?.trial1) || 0));
+    const t2 = Math.min(12, Math.max(0, Number(im?.trial2) || 0));
+    const t3 = Math.min(12, Math.max(0, Number(im?.trial3) || 0));
+    const immediateMemoryResult = (t1 || t2 || t3) ? {
+      words: [...IMMEDIATE_MEMORY_WORDS],
+      trial1: t1, trial2: t2, trial3: t3,
+      totalScore: t1 + t2 + t3,
+    } : undefined;
+
     const exertionalStages: ExertionalStageResult[] = [
       ...EXERTIONAL_STAGE_DEFS.filter((s) => s.hasTasks).map((stageDef) => ({
         stageId: stageDef.id,
         stageName: stageDef.name,
+        ...(stageDef.id === 1 && immediateMemoryResult ? { immediateMemory: immediateMemoryResult } : {}),
         tasks: EXERTIONAL_TASK_NAMES.map((task) => {
           const entry = data.exertionalTasks?.[stageDef.id]?.[task];
           return {
