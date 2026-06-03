@@ -216,6 +216,16 @@ export function ExertionalEntryForm({ register, control, watch, setValue, onHRFi
               </div>
             )}
 
+            {/* COWAT instructions — Stage 3 only */}
+            {stageDef.id === 3 && (
+              <div className="mx-4 mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+                <p className="text-xs font-semibold text-amber-800 uppercase tracking-wide mb-1">Instructions for participant — read aloud before beginning</p>
+                <p className="text-sm text-amber-900 leading-relaxed">
+                  "In this stage, you will be asked to say as many different words as you can that begin with a specific letter as you complete the squats, lunges, and hip hinges. Do not use proper names (e.g., John, Toronto), numbers, or the same word with different endings (e.g., run, running, runner). Work as quickly as you can, and if you get stuck, keep trying to think of new words until time is up."
+                </p>
+              </div>
+            )}
+
             {/* Task table */}
             <div className="p-4 overflow-x-auto">
               <table className="w-full text-sm">
