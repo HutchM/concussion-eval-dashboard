@@ -77,7 +77,7 @@ export function ExertionalSection({ exertional }: Props) {
               </h4>
             </div>
 
-            {/* Immediate Memory — Stage 1 */}
+            {/* Immediate Memory — shown at top of Stage 1 */}
             {stage.immediateMemory && (
               <div className="px-4 pt-3 pb-1">
                 <div className="rounded-lg bg-white border border-blue-100 p-4">

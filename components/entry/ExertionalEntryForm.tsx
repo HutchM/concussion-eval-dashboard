@@ -112,43 +112,6 @@ export function ExertionalEntryForm({ register, control, watch, setValue, onHRFi
             <span className="text-sm font-bold">Stage {stageDef.id}</span>
             <span className="text-sm font-semibold">{stageDef.name}</span>
           </div>
-          <div className="p-4 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-1.5 text-xs text-gray-500 font-semibold uppercase tracking-wide w-28">Task</th>
-                  <th className="text-center py-1.5 text-xs text-gray-500 font-semibold uppercase tracking-wide">RPE (6–20)</th>
-                  <th className="text-center py-1.5 text-xs text-gray-500 font-semibold uppercase tracking-wide">Symptoms (0–10)</th>
-                  <th className="text-left py-1.5 text-xs text-gray-500 font-semibold uppercase tracking-wide pl-2">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {EXERTIONAL_TASK_NAMES.map((task) => {
-                  const symp = tasks?.[stageDef.id]?.[task]?.symptomScore ?? "";
-                  return (
-                    <tr key={task} className="border-b border-gray-100 last:border-0">
-                      <td className="py-2 pr-3 font-medium text-gray-700">{task}</td>
-                      <td className="py-1.5 px-1">
-                        <input type="number" min="6" max="20"
-                          {...register(`exertionalTasks.${stageDef.id}.${task}.rpe` as const)}
-                          placeholder="—" className={inputCls} />
-                      </td>
-                      <td className="py-1.5 px-1">
-                        <input type="number" min="0" max="10"
-                          {...register(`exertionalTasks.${stageDef.id}.${task}.symptomScore` as const)}
-                          placeholder="—" className={clsx(inputCls, symptomColor(String(symp)))} />
-                      </td>
-                      <td className="py-1.5 pl-2">
-                        <input {...register(`exertionalTasks.${stageDef.id}.${task}.notes` as const)}
-                          placeholder="optional" className={clsx(inputCls, "text-left")} />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
           {/* Immediate Memory — Stage 1 only */}
           {stageDef.id === 1 && (
             <div className="mx-4 mb-4 rounded-lg border border-blue-200 bg-white p-4">
@@ -198,6 +161,43 @@ export function ExertionalEntryForm({ register, control, watch, setValue, onHRFi
               </div>
             </div>
           )}
+
+          <div className="p-4 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-1.5 text-xs text-gray-500 font-semibold uppercase tracking-wide w-28">Task</th>
+                  <th className="text-center py-1.5 text-xs text-gray-500 font-semibold uppercase tracking-wide">RPE (6–20)</th>
+                  <th className="text-center py-1.5 text-xs text-gray-500 font-semibold uppercase tracking-wide">Symptoms (0–10)</th>
+                  <th className="text-left py-1.5 text-xs text-gray-500 font-semibold uppercase tracking-wide pl-2">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {EXERTIONAL_TASK_NAMES.map((task) => {
+                  const symp = tasks?.[stageDef.id]?.[task]?.symptomScore ?? "";
+                  return (
+                    <tr key={task} className="border-b border-gray-100 last:border-0">
+                      <td className="py-2 pr-3 font-medium text-gray-700">{task}</td>
+                      <td className="py-1.5 px-1">
+                        <input type="number" min="6" max="20"
+                          {...register(`exertionalTasks.${stageDef.id}.${task}.rpe` as const)}
+                          placeholder="—" className={inputCls} />
+                      </td>
+                      <td className="py-1.5 px-1">
+                        <input type="number" min="0" max="10"
+                          {...register(`exertionalTasks.${stageDef.id}.${task}.symptomScore` as const)}
+                          placeholder="—" className={clsx(inputCls, symptomColor(String(symp)))} />
+                      </td>
+                      <td className="py-1.5 pl-2">
+                        <input {...register(`exertionalTasks.${stageDef.id}.${task}.notes` as const)}
+                          placeholder="optional" className={clsx(inputCls, "text-left")} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       ))}
 
