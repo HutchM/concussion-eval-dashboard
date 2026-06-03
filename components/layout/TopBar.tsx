@@ -6,7 +6,7 @@ import { clsx } from "clsx";
 const nav = [
   { href: "/",         label: "Overview" },
   { href: "/enter",    label: "New Evaluation" },
-  { href: "/athletes", label: "Athletes" },
+  { href: "/athletes", label: "Users" },
 ];
 
 export function TopBar() {

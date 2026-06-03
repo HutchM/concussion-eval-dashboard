@@ -6,7 +6,7 @@ import { clsx } from "clsx";
 const nav = [
   { href: "/",          label: "Overview",     icon: "⊞" },
   { href: "/enter",     label: "New Evaluation", icon: "＋" },
-  { href: "/athletes",  label: "Athletes",     icon: "👤" },
+  { href: "/athletes",  label: "Users",        icon: "👤" },
 ];
 
 export function Sidebar() {
