@@ -55,22 +55,11 @@ export function buildVOMSTestResult(
 // ─── Exertional Scoring ───────────────────────────────────────────────────────
 
 export function calculateExertionalResults(
-  partial: Omit<ExertionalResults, "maxHeartRate" | "symptomThresholdInfo" | "exertionalTolerance">
+  partial: Omit<ExertionalResults, "symptomThresholdInfo" | "exertionalTolerance">
 ): ExertionalResults {
   const { stages } = partial;
 
-  // Collect all HR values across tasks and stage-4 direct value
-  const allHRs: number[] = [];
-  for (const stage of stages) {
-    if (stage.tasks.length > 0) {
-      allHRs.push(...stage.tasks.map((t) => t.heartRate).filter((h) => h > 0));
-    } else if (stage.heartRate) {
-      allHRs.push(stage.heartRate);
-    }
-  }
-  const maxHeartRate = allHRs.length > 0 ? Math.max(...allHRs) : undefined;
-
-  // Find first task where symptom score > 0 (i.e. first provocation point)
+  // Find first task where symptoms increased above 0
   let symptomThresholdInfo: string | undefined;
   outer: for (const stage of stages) {
     if (stage.tasks.length > 0) {
@@ -88,12 +77,11 @@ export function calculateExertionalResults(
 
   let exertionalTolerance: ExertionalResults["exertionalTolerance"] = "Full";
   if (partial.stopReason === "Symptom provocation") {
-    // Unable if stopped within stage 1
     const stoppedEarly = stages.length <= 1 && stages[0]?.tasks.length <= 1;
     exertionalTolerance = stoppedEarly ? "Unable to complete" : "Symptom-limited";
   }
 
-  return { ...partial, maxHeartRate, symptomThresholdInfo, exertionalTolerance };
+  return { ...partial, symptomThresholdInfo, exertionalTolerance };
 }
 
 // ─── Days since injury ────────────────────────────────────────────────────────

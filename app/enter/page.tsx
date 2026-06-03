@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/Card";
 import { useEvaluationStore } from "@/store/evaluationStore";
 import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults, calcDaysSinceInjury, buildVOMSTestResult } from "@/lib/scoring";
 import { SYMPTOM_LIST, VOMS_TESTS, EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES } from "@/types";
-import type { SymptomScores, VOMSTestResult, ExertionalStageResult } from "@/types";
+import type { SymptomScores, VOMSTestResult, ExertionalStageResult, HRDataPoint } from "@/types";
 import { clsx } from "clsx";
 
 const STEPS = ["Profile", "Symptoms", "VOMS", "Exertional Testing", "Review & Save"];
@@ -34,6 +34,8 @@ export default function EnterPage() {
   const { addEvaluation } = useEvaluationStore();
   const [step, setStep] = useState(0);
   const [saved, setSaved] = useState(false);
+  const [hrFileData, setHrFileData] = useState<HRDataPoint[] | null>(null);
+  const [hrFileName, setHrFileName] = useState<string | undefined>();
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -45,7 +47,7 @@ export default function EnterPage() {
       voms: defaultVOMS(),
       stopReason: "Protocol complete",
       exertionalTasks: {},
-      exertionalStage4: { heartRate: "", rpe: "", symptomScore: "", notes: "" },
+      exertionalStage4: { rpe: "", symptomScore: "", notes: "" },
     },
   });
 
@@ -84,19 +86,17 @@ export default function EnterPage() {
           const entry = data.exertionalTasks?.[stageDef.id]?.[task];
           return {
             task,
-            heartRate: Number(entry?.heartRate) || 0,
-            rpe: Number(entry?.rpe) || 6,
+            rpe: entry?.rpe ? Number(entry.rpe) : undefined,
             symptomScore: Number(entry?.symptomScore) || 0,
             notes: entry?.notes || undefined,
           };
-        }).filter((t) => t.heartRate > 0),
+        }).filter((t) => t.symptomScore > 0 || t.rpe),
       })).filter((s) => s.tasks.length > 0),
-      ...(data.exertionalStage4?.heartRate ? [{
+      ...(data.exertionalStage4?.symptomScore || data.exertionalStage4?.rpe ? [{
         stageId: 4,
         stageName: "Multi-planar / High Exertion",
-        tasks: [],
-        heartRate: Number(data.exertionalStage4.heartRate) || undefined,
-        rpe: Number(data.exertionalStage4.rpe) || undefined,
+        tasks: [] as ExertionalStageResult["tasks"],
+        rpe: data.exertionalStage4.rpe ? Number(data.exertionalStage4.rpe) : undefined,
         symptomScore: Number(data.exertionalStage4.symptomScore) || undefined,
         notes: data.exertionalStage4.notes || undefined,
       }] : []),
@@ -121,9 +121,9 @@ export default function EnterPage() {
       voms: calculateVOMSResults(vomsTests),
       exertional: calculateExertionalResults({
         stages: exertionalStages,
-        restingHeartRate: Number(data.restingHeartRate) || 60,
         stopReason: data.stopReason,
         notes: data.exertionalNotes,
+        ...(hrFileData ? { hrFileData, hrFileName } : {}),
       }),
       completedAt: new Date().toISOString(),
     };
@@ -204,7 +204,14 @@ export default function EnterPage() {
           <Card>
             <h2 className="text-base font-semibold text-gray-900 mb-1">Exertional Testing</h2>
             <p className="text-sm text-gray-500 mb-4">Record each stage of the exertional protocol. Add stages as needed. Delete unused rows.</p>
-            <ExertionalEntryForm register={register} control={control} watch={watch} />
+            <ExertionalEntryForm
+              register={register}
+              control={control}
+              watch={watch}
+              setValue={setValue}
+              onHRFileLoaded={(data, name) => { setHrFileData(data); setHrFileName(name); }}
+              hrFileName={hrFileName}
+            />
           </Card>
         )}
 

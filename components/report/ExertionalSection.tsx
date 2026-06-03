@@ -2,6 +2,7 @@ import type { ExertionalResults } from "@/types";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { toleranceBadge } from "@/components/ui/Badge";
 import { ExertionalChart } from "@/components/charts/ExertionalChart";
+import { HRFileChart } from "@/components/charts/HRFileChart";
 import { clsx } from "clsx";
 
 interface Props { exertional: ExertionalResults; }
@@ -42,10 +43,10 @@ export function ExertionalSection({ exertional }: Props) {
                 <p className="text-xs text-gray-400">Stages Completed</p>
                 <p className="text-xl font-bold text-gray-800">{exertional.stages.length}<span className="text-sm font-normal text-gray-400">/4</span></p>
               </div>
-              {exertional.maxHeartRate && (
+              {exertional.hrFileName && (
                 <div className="text-right">
-                  <p className="text-xs text-gray-400">Max HR</p>
-                  <p className="text-xl font-bold text-gray-800">{exertional.maxHeartRate}<span className="text-sm font-normal text-gray-400"> bpm</span></p>
+                  <p className="text-xs text-gray-400">HR File</p>
+                  <p className="text-sm font-medium text-emerald-600">✓ Uploaded</p>
                 </div>
               )}
             </div>
@@ -53,9 +54,18 @@ export function ExertionalSection({ exertional }: Props) {
         />
       </div>
 
+      {/* Symptom chart */}
       <div className="px-2 pb-2">
         <ExertionalChart exertional={exertional} />
       </div>
+
+      {/* HR file chart — only shown when a file was uploaded */}
+      {exertional.hrFileData && exertional.hrFileData.length > 0 && (
+        <div className="px-6 pb-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Heart Rate Trace</p>
+          <HRFileChart data={exertional.hrFileData} fileName={exertional.hrFileName} />
+        </div>
+      )}
 
       {/* Per-stage breakdown */}
       <div className="px-6 pb-6 space-y-4">
@@ -72,7 +82,6 @@ export function ExertionalSection({ exertional }: Props) {
                 <thead>
                   <tr className="border-b border-inherit">
                     <th className="text-left px-4 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Task</th>
-                    <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">HR (bpm)</th>
                     <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">RPE</th>
                     <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Symptoms</th>
                     <th className="text-left px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Notes</th>
@@ -82,8 +91,7 @@ export function ExertionalSection({ exertional }: Props) {
                   {stage.tasks.map((task) => (
                     <tr key={task.task} className="border-t border-inherit last:border-0">
                       <td className="px-4 py-2.5 font-medium text-gray-800">{task.task}</td>
-                      <td className="text-center px-3 py-2.5 font-medium text-indigo-700">{task.heartRate}</td>
-                      <td className="text-center px-3 py-2.5 text-gray-600">{task.rpe}</td>
+                      <td className="text-center px-3 py-2.5 text-gray-600">{task.rpe ?? "—"}</td>
                       <td className={clsx("text-center px-3 py-2.5", symptomStyle(task.symptomScore))}>
                         {task.symptomScore}/10
                       </td>
@@ -93,11 +101,7 @@ export function ExertionalSection({ exertional }: Props) {
                 </tbody>
               </table>
             ) : (
-              <div className="px-4 py-3 grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-gray-400">HR</p>
-                  <p className="font-medium text-indigo-700">{stage.heartRate ?? "—"} bpm</p>
-                </div>
+              <div className="px-4 py-3 grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-xs text-gray-400">RPE</p>
                   <p className="font-medium text-gray-700">{stage.rpe ?? "—"}</p>
@@ -116,7 +120,6 @@ export function ExertionalSection({ exertional }: Props) {
 
         {/* Summary row */}
         <div className="flex flex-wrap gap-4 text-sm pt-1">
-          <div><span className="text-gray-400">Resting HR:</span> <span className="font-medium">{exertional.restingHeartRate} bpm</span></div>
           {exertional.symptomThresholdInfo && (
             <div><span className="text-gray-400">First symptoms at:</span> <span className="font-medium text-amber-600">{exertional.symptomThresholdInfo}</span></div>
           )}

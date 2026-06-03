@@ -41,21 +41,21 @@ const eval1Exertional = calculateExertionalResults({
     {
       stageId: 1, stageName: "Cardiovascular Load",
       tasks: [
-        { task: "Squats",     heartRate: 88,  rpe: 9,  symptomScore: 0 },
-        { task: "Lunges",     heartRate: 95,  rpe: 10, symptomScore: 0 },
-        { task: "Hip Hinges", heartRate: 100, rpe: 11, symptomScore: 1 },
+        { task: "Squats",     rpe: 9,  symptomScore: 0 },
+        { task: "Lunges",     rpe: 10, symptomScore: 0 },
+        { task: "Hip Hinges", rpe: 11, symptomScore: 1 },
       ],
     },
     {
       stageId: 2, stageName: "Head Acceleration / Movement",
       tasks: [
-        { task: "Squats",     heartRate: 108, rpe: 12, symptomScore: 2 },
-        { task: "Lunges",     heartRate: 115, rpe: 13, symptomScore: 3 },
-        { task: "Hip Hinges", heartRate: 120, rpe: 14, symptomScore: 4, notes: "Headache increased" },
+        { task: "Squats",     rpe: 12, symptomScore: 2 },
+        { task: "Lunges",     rpe: 13, symptomScore: 3 },
+        { task: "Hip Hinges", rpe: 14, symptomScore: 4, notes: "Headache increased" },
       ],
     },
   ],
-  restingHeartRate: 68,
+  
   stopReason: "Symptom provocation",
   notes: "Stopped at Stage 2 Hip Hinges due to significant headache increase.",
 });
@@ -114,34 +114,34 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
         {
           stageId: 1, stageName: "Cardiovascular Load",
           tasks: [
-            { task: "Squats",     heartRate: 85,  rpe: 8,  symptomScore: 0 },
-            { task: "Lunges",     heartRate: 90,  rpe: 9,  symptomScore: 0 },
-            { task: "Hip Hinges", heartRate: 92,  rpe: 9,  symptomScore: 0 },
+            { task: "Squats",     rpe: 8,  symptomScore: 0 },
+            { task: "Lunges",     rpe: 9,  symptomScore: 0 },
+            { task: "Hip Hinges", rpe: 9,  symptomScore: 0 },
           ],
         },
         {
           stageId: 2, stageName: "Head Acceleration / Movement",
           tasks: [
-            { task: "Squats",     heartRate: 100, rpe: 11, symptomScore: 0 },
-            { task: "Lunges",     heartRate: 105, rpe: 11, symptomScore: 0 },
-            { task: "Hip Hinges", heartRate: 108, rpe: 12, symptomScore: 0 },
+            { task: "Squats",     rpe: 11, symptomScore: 0 },
+            { task: "Lunges",     rpe: 11, symptomScore: 0 },
+            { task: "Hip Hinges", rpe: 12, symptomScore: 0 },
           ],
         },
         {
           stageId: 3, stageName: "Dual Task",
           tasks: [
-            { task: "Squats",     heartRate: 115, rpe: 13, symptomScore: 1 },
-            { task: "Lunges",     heartRate: 120, rpe: 13, symptomScore: 1 },
-            { task: "Hip Hinges", heartRate: 124, rpe: 14, symptomScore: 1 },
+            { task: "Squats",     rpe: 13, symptomScore: 1 },
+            { task: "Lunges",     rpe: 13, symptomScore: 1 },
+            { task: "Hip Hinges", rpe: 14, symptomScore: 1 },
           ],
         },
         {
           stageId: 4, stageName: "Multi-planar / High Exertion",
-          tasks: [], heartRate: 148, rpe: 16, symptomScore: 1,
+          tasks: [], rpe: 16, symptomScore: 1,
           notes: "Completed full protocol without significant symptom change.",
         },
       ],
-      restingHeartRate: 62,
+      
       stopReason: "Protocol complete",
       notes: "Full protocol completed. Minimal symptom response throughout.",
     }),
@@ -200,12 +200,12 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
         {
           stageId: 1, stageName: "Cardiovascular Load",
           tasks: [
-            { task: "Squats",     heartRate: 90, rpe: 10, symptomScore: 5 },
-            { task: "Lunges",     heartRate: 98, rpe: 11, symptomScore: 7, notes: "Reported severe headache and nausea" },
+            { task: "Squats",     rpe: 10, symptomScore: 5 },
+            { task: "Lunges",     rpe: 11, symptomScore: 7, notes: "Reported severe headache and nausea" },
           ],
         },
       ],
-      restingHeartRate: 72,
+      
       stopReason: "Symptom provocation",
       notes: "Stopped during Stage 1 Lunges. Severe headache and nausea. Patient unable to continue.",
     }),

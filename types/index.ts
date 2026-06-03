@@ -109,10 +109,14 @@ export type ExertionalTaskName = (typeof EXERTIONAL_TASK_NAMES)[number];
 
 export interface ExertionalTaskResult {
   task: ExertionalTaskName;
-  heartRate: number;    // bpm
-  rpe: number;          // Borg 6–20
+  rpe?: number;         // Borg 6–20
   symptomScore: number; // 0–10
   notes?: string;
+}
+
+export interface HRDataPoint {
+  time: number; // seconds from start
+  hr: number;   // bpm
 }
 
 export interface ExertionalStageResult {
@@ -120,7 +124,6 @@ export interface ExertionalStageResult {
   stageName: string;
   tasks: ExertionalTaskResult[]; // Squats, Lunges, Hip Hinges for stages 1–3
   // Stage 4 uses these direct metrics (no sub-tasks)
-  heartRate?: number;
   rpe?: number;
   symptomScore?: number;
   notes?: string;
@@ -135,11 +138,11 @@ export type StopReason =
 
 export interface ExertionalResults {
   stages: ExertionalStageResult[];
-  restingHeartRate: number;
-  maxHeartRate?: number;
   symptomThresholdInfo?: string; // plain text e.g. "Stage 2 – Lunges"
   stopReason: StopReason;
   exertionalTolerance: "Full" | "Symptom-limited" | "Unable to complete";
+  hrFileData?: HRDataPoint[]; // parsed from optional uploaded HR file
+  hrFileName?: string;
   notes?: string;
 }
 
