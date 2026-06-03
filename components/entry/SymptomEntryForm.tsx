@@ -46,30 +46,6 @@ export function SymptomEntryForm({ register, control }: Props) {
 
   return (
     <div>
-      {/* Percentage of normal question */}
-      <div className="mb-6 p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
-        <label className="block text-sm font-semibold text-gray-800 mb-3">
-          If 100% is perfectly normal, what percentage of normal do you feel right now?
-        </label>
-        <div className="flex items-center gap-4">
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="5"
-            {...register("percentageOfNormal")}
-            className="flex-1 accent-indigo-600"
-          />
-          <span className={`text-2xl font-bold w-16 text-right ${pct >= 80 ? "text-emerald-600" : pct >= 50 ? "text-amber-600" : "text-red-600"}`}>
-            {pct || 0}%
-          </span>
-        </div>
-        <div className="flex justify-between text-xs text-gray-400 mt-1 px-0.5">
-          <span>0% — Not normal at all</span>
-          <span>100% — Completely normal</span>
-        </div>
-      </div>
-
       {/* Totals bar */}
       <div className="flex gap-6 mb-4 p-3 bg-gray-50 rounded-lg">
         <div>
@@ -123,6 +99,30 @@ export function SymptomEntryForm({ register, control }: Props) {
             </div>
           );
         })}
+      </div>
+
+      {/* Percentage of normal question */}
+      <div className="mt-6 p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
+        <label className="block text-sm font-semibold text-gray-800 mb-3">
+          If 100% is perfectly normal, what percentage of normal do you feel right now?
+        </label>
+        <div className="flex items-center gap-4">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="2"
+            {...register("percentageOfNormal")}
+            className="flex-1 accent-indigo-600"
+          />
+          <span className={`text-2xl font-bold w-16 text-right ${pct >= 80 ? "text-emerald-600" : pct >= 50 ? "text-amber-600" : "text-red-600"}`}>
+            {pct || 0}%
+          </span>
+        </div>
+        <div className="flex justify-between text-xs text-gray-400 mt-1 px-0.5">
+          <span>0% — Not normal at all</span>
+          <span>100% — Completely normal</span>
+        </div>
       </div>
     </div>
   );
