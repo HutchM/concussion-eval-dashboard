@@ -117,12 +117,14 @@ export function ExertionalSection({ exertional }: Props) {
               </div>
             )}
 
-            {stage.tasks.length > 0 ? (
+            {stage.tasks.length > 0 ? (<>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-inherit">
                     <th className="text-left px-4 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Task</th>
-                    <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">RPE</th>
+                    <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">
+                      {stage.stageId === 2 ? "Time (secs)" : "Reps"}
+                    </th>
                     <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Symptom</th>
                     <th className="text-left px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Symptoms Reported</th>
                     <th className="text-left px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Notes</th>
@@ -132,7 +134,9 @@ export function ExertionalSection({ exertional }: Props) {
                   {stage.tasks.map((task) => (
                     <tr key={task.task} className="border-t border-inherit last:border-0">
                       <td className="px-4 py-2.5 font-medium text-gray-800">{task.task}</td>
-                      <td className="text-center px-3 py-2.5 text-gray-600">{task.rpe ?? "—"}</td>
+                      <td className="text-center px-3 py-2.5 text-gray-600">
+                        {stage.stageId === 2 ? (task.duration ?? "—") : (task.reps ?? "—")}
+                      </td>
                       <td className="text-center px-3 py-2.5">
                         {task.symptomProvoked
                           ? <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Yes</span>
@@ -155,11 +159,18 @@ export function ExertionalSection({ exertional }: Props) {
                   ))}
                 </tbody>
               </table>
-            ) : (
+              {stage.rpe !== undefined && (
+                <div className="px-4 py-2.5 border-t border-gray-100 flex items-center gap-3 text-sm">
+                  <span className="text-xs text-gray-400 uppercase tracking-wide font-medium">End-of-stage RPE</span>
+                  <span className="font-semibold text-gray-800">{stage.rpe}</span>
+                  <span className="text-xs text-gray-400">/ 20</span>
+                </div>
+              )}
+            </>) : (
               <div className="px-4 py-3 grid grid-cols-3 gap-4 text-sm">
                 <div>
-                  <p className="text-xs text-gray-400">RPE</p>
-                  <p className="font-medium text-gray-700">{stage.rpe ?? "—"}</p>
+                  <p className="text-xs text-gray-400">End-of-stage RPE</p>
+                  <p className="font-medium text-gray-700">{stage.rpe ?? "—"}<span className="text-xs text-gray-400 ml-1">/ 20</span></p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Symptom</p>

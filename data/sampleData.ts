@@ -41,18 +41,20 @@ const eval1Exertional = calculateExertionalResults({
     {
       stageId: 1, stageName: "Cardiovascular Load",
       immediateMemory: { words: [...IMMEDIATE_MEMORY_WORDS], trial1: 7, trial2: 9, trial3: 9, totalScore: 25 },
+      rpe: 11,
       tasks: [
-        { task: "Squats",     rpe: 9,  symptomProvoked: false, symptomDetails: [] },
-        { task: "Lunges",     rpe: 10, symptomProvoked: false, symptomDetails: [] },
-        { task: "Hip Hinges", rpe: 11, symptomProvoked: true,  symptomDetails: [{ symptom: "Headache", increase: 1 }] },
+        { task: "Squats",     reps: 10, symptomProvoked: false, symptomDetails: [] },
+        { task: "Lunges",     reps: 10, symptomProvoked: false, symptomDetails: [] },
+        { task: "Hip Hinges", reps: 10, symptomProvoked: true,  symptomDetails: [{ symptom: "Headache", increase: 1 }] },
       ],
     },
     {
       stageId: 2, stageName: "Head Acceleration / Movement",
+      rpe: 14,
       tasks: [
-        { task: "Squats",     rpe: 12, symptomProvoked: true,  symptomDetails: [{ symptom: "Headache", increase: 2 }, { symptom: "Dizziness", increase: 1 }] },
-        { task: "Lunges",     rpe: 13, symptomProvoked: true,  symptomDetails: [{ symptom: "Headache", increase: 3 }, { symptom: "Dizziness", increase: 2 }] },
-        { task: "Hip Hinges", rpe: 14, symptomProvoked: true,  symptomDetails: [{ symptom: "Headache", increase: 4 }, { symptom: "Nausea or vomiting", increase: 2 }], notes: "Test stopped" },
+        { task: "Squats",     duration: 30, symptomProvoked: true,  symptomDetails: [{ symptom: "Headache", increase: 2 }, { symptom: "Dizziness", increase: 1 }] },
+        { task: "Lunges",     duration: 30, symptomProvoked: true,  symptomDetails: [{ symptom: "Headache", increase: 3 }, { symptom: "Dizziness", increase: 2 }] },
+        { task: "Hip Hinges", duration: 20, symptomProvoked: true,  symptomDetails: [{ symptom: "Headache", increase: 4 }, { symptom: "Nausea or vomiting", increase: 2 }], notes: "Test stopped" },
       ],
     },
   ],
@@ -115,31 +117,34 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
         {
           stageId: 1, stageName: "Cardiovascular Load",
           immediateMemory: { words: [...IMMEDIATE_MEMORY_WORDS], trial1: 10, trial2: 11, trial3: 12, totalScore: 33 },
+          rpe: 9,
           tasks: [
-            { task: "Squats",     rpe: 8,  symptomProvoked: false, symptomDetails: [] },
-            { task: "Lunges",     rpe: 9,  symptomProvoked: false, symptomDetails: [] },
-            { task: "Hip Hinges", rpe: 9,  symptomProvoked: false, symptomDetails: [] },
+            { task: "Squats",     reps: 12, symptomProvoked: false, symptomDetails: [] },
+            { task: "Lunges",     reps: 12, symptomProvoked: false, symptomDetails: [] },
+            { task: "Hip Hinges", reps: 12, symptomProvoked: false, symptomDetails: [] },
           ],
         },
         {
           stageId: 2, stageName: "Head Acceleration / Movement",
+          rpe: 12,
           tasks: [
-            { task: "Squats",     rpe: 11, symptomProvoked: false, symptomDetails: [] },
-            { task: "Lunges",     rpe: 11, symptomProvoked: false, symptomDetails: [] },
-            { task: "Hip Hinges", rpe: 12, symptomProvoked: false, symptomDetails: [] },
+            { task: "Squats",     duration: 30, symptomProvoked: false, symptomDetails: [] },
+            { task: "Lunges",     duration: 30, symptomProvoked: false, symptomDetails: [] },
+            { task: "Hip Hinges", duration: 30, symptomProvoked: false, symptomDetails: [] },
           ],
         },
         {
           stageId: 3, stageName: "Dual Task",
+          rpe: 14,
           tasks: [
-            { task: "Squats",     rpe: 13, symptomProvoked: true, symptomDetails: [{ symptom: "Fatigue or low energy", increase: 1 }] },
-            { task: "Lunges",     rpe: 13, symptomProvoked: true, symptomDetails: [{ symptom: "Fatigue or low energy", increase: 1 }] },
-            { task: "Hip Hinges", rpe: 14, symptomProvoked: true, symptomDetails: [{ symptom: "Fatigue or low energy", increase: 1 }] },
+            { task: "Squats",     reps: 10, symptomProvoked: true, symptomDetails: [{ symptom: "Fatigue or low energy", increase: 1 }] },
+            { task: "Lunges",     reps: 10, symptomProvoked: true, symptomDetails: [{ symptom: "Fatigue or low energy", increase: 1 }] },
+            { task: "Hip Hinges", reps: 10, symptomProvoked: true, symptomDetails: [{ symptom: "Fatigue or low energy", increase: 1 }] },
           ],
         },
         {
           stageId: 4, stageName: "Multi-planar / High Exertion",
-          tasks: [], rpe: 16, symptomProvoked: false, symptomDetails: [],
+          rpe: 16, tasks: [], symptomProvoked: false, symptomDetails: [],
           notes: "Completed full protocol without significant symptom change.",
         },
       ],
@@ -202,8 +207,8 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
         {
           stageId: 1, stageName: "Cardiovascular Load",
           tasks: [
-            { task: "Squats",     rpe: 10, symptomProvoked: true, symptomDetails: [{ symptom: "Headache", increase: 5 }, { symptom: "Dizziness", increase: 3 }] },
-            { task: "Lunges",     rpe: 11, symptomProvoked: true, symptomDetails: [{ symptom: "Headache", increase: 7 }, { symptom: "Nausea or vomiting", increase: 4 }], notes: "Stopped — severe symptoms" },
+            { task: "Squats",     reps: 5, symptomProvoked: true, symptomDetails: [{ symptom: "Headache", increase: 5 }, { symptom: "Dizziness", increase: 3 }] },
+            { task: "Lunges",     reps: 3, symptomProvoked: true, symptomDetails: [{ symptom: "Headache", increase: 7 }, { symptom: "Nausea or vomiting", increase: 4 }], notes: "Stopped — severe symptoms" },
           ],
         },
       ],

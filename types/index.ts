@@ -114,7 +114,8 @@ export interface SymptomOccurrence {
 
 export interface ExertionalTaskResult {
   task: ExertionalTaskName;
-  rpe?: number;
+  reps?: number;      // stages 1 & 3 — number of reps completed
+  duration?: number;  // stage 2 — time in seconds
   symptomProvoked: boolean;
   symptomDetails: SymptomOccurrence[];
   notes?: string;
@@ -143,9 +144,9 @@ export const IMMEDIATE_MEMORY_WORDS = [
 export interface ExertionalStageResult {
   stageId: number;
   stageName: string;
-  tasks: ExertionalTaskResult[]; // Squats, Lunges, Hip Hinges for stages 1–3
-  // Stage 4 uses these direct metrics (no sub-tasks)
-  rpe?: number;
+  tasks: ExertionalTaskResult[];
+  rpe?: number;                    // end-of-stage RPE (all stages)
+  // Stage 4 direct metrics (no sub-tasks)
   symptomProvoked?: boolean;
   symptomDetails?: SymptomOccurrence[];
   notes?: string;
