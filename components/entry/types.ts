@@ -1,22 +1,6 @@
 import type { SymptomName, VOMSTestName, StopReason } from "@/types";
 
-export interface SymptomEntry {
-  name: SymptomName;
-  rating: number;
-}
-
-export interface VOMSEntry {
-  test: VOMSTestName;
-  baselineSymptoms: number;
-  postSymptoms: number;
-  npcDistance?: number;
-}
-
-export interface ExertionalStageEntry {
-  stage: number;
-  speed: string;
-  incline: string;
-  duration: string;
+export interface ExertionalTaskEntry {
   heartRate: string;
   rpe: string;
   symptomScore: string;
@@ -44,9 +28,12 @@ export interface EntryFormValues {
     npcDistance?: number;
   }>;
 
-  // Exertional
+  // Exertional — structured 4-stage protocol
   restingHeartRate: string;
   stopReason: StopReason;
   exertionalNotes?: string;
-  stages: ExertionalStageEntry[];
+  // Stages 1–3: keyed by stageId, then taskName
+  exertionalTasks: Record<string, Record<string, ExertionalTaskEntry>>;
+  // Stage 4: single entry
+  exertionalStage4: ExertionalTaskEntry;
 }

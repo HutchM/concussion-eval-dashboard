@@ -11,8 +11,8 @@ import { ExertionalEntryForm } from "@/components/entry/ExertionalEntryForm";
 import { Card } from "@/components/ui/Card";
 import { useEvaluationStore } from "@/store/evaluationStore";
 import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults, calcDaysSinceInjury, buildVOMSTestResult } from "@/lib/scoring";
-import { SYMPTOM_LIST, VOMS_TESTS } from "@/types";
-import type { SymptomScores, VOMSTestResult, ExertionalStage } from "@/types";
+import { SYMPTOM_LIST, VOMS_TESTS, EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES } from "@/types";
+import type { SymptomScores, VOMSTestResult, ExertionalStageResult } from "@/types";
 import { clsx } from "clsx";
 
 const STEPS = ["Profile", "Symptoms", "VOMS", "Exertional Testing", "Review & Save"];
@@ -44,11 +44,8 @@ export default function EnterPage() {
       percentageOfNormal: "80",
       voms: defaultVOMS(),
       stopReason: "Protocol complete",
-      stages: [
-        { stage: 1, speed: "3.2", incline: "0", duration: "2", heartRate: "", rpe: "", symptomScore: "", notes: "" },
-        { stage: 2, speed: "4.0", incline: "0", duration: "2", heartRate: "", rpe: "", symptomScore: "", notes: "" },
-        { stage: 3, speed: "4.8", incline: "2", duration: "2", heartRate: "", rpe: "", symptomScore: "", notes: "" },
-      ],
+      exertionalTasks: {},
+      exertionalStage4: { heartRate: "", rpe: "", symptomScore: "", notes: "" },
     },
   });
 
@@ -79,16 +76,31 @@ export default function EnterPage() {
       return buildVOMSTestResult(test, pre, post, npcDistance);
     });
 
-    const stages: ExertionalStage[] = (data.stages ?? []).map((s, i) => ({
-      stage: i + 1,
-      speed: s.speed ? Number(s.speed) : undefined,
-      incline: s.incline ? Number(s.incline) : undefined,
-      duration: s.duration ? Number(s.duration) : undefined,
-      heartRate: Number(s.heartRate) || 0,
-      rpe: Number(s.rpe) || 6,
-      symptomScore: Number(s.symptomScore) || 0,
-      notes: s.notes || undefined,
-    })).filter((s) => s.heartRate > 0);
+    const exertionalStages: ExertionalStageResult[] = [
+      ...EXERTIONAL_STAGE_DEFS.filter((s) => s.hasTasks).map((stageDef) => ({
+        stageId: stageDef.id,
+        stageName: stageDef.name,
+        tasks: EXERTIONAL_TASK_NAMES.map((task) => {
+          const entry = data.exertionalTasks?.[stageDef.id]?.[task];
+          return {
+            task,
+            heartRate: Number(entry?.heartRate) || 0,
+            rpe: Number(entry?.rpe) || 6,
+            symptomScore: Number(entry?.symptomScore) || 0,
+            notes: entry?.notes || undefined,
+          };
+        }).filter((t) => t.heartRate > 0),
+      })).filter((s) => s.tasks.length > 0),
+      ...(data.exertionalStage4?.heartRate ? [{
+        stageId: 4,
+        stageName: "Multi-planar / High Exertion",
+        tasks: [],
+        heartRate: Number(data.exertionalStage4.heartRate) || undefined,
+        rpe: Number(data.exertionalStage4.rpe) || undefined,
+        symptomScore: Number(data.exertionalStage4.symptomScore) || undefined,
+        notes: data.exertionalStage4.notes || undefined,
+      }] : []),
+    ];
 
     const daysSinceInjury = calcDaysSinceInjury(data.injuryDate, data.evaluationDate);
 
@@ -108,7 +120,7 @@ export default function EnterPage() {
       symptoms: calculateSymptomResults(symptomScores, data.percentageOfNormal ? Number(data.percentageOfNormal) : undefined),
       voms: calculateVOMSResults(vomsTests),
       exertional: calculateExertionalResults({
-        stages,
+        stages: exertionalStages,
         restingHeartRate: Number(data.restingHeartRate) || 60,
         stopReason: data.stopReason,
         notes: data.exertionalNotes,
@@ -209,7 +221,7 @@ export default function EnterPage() {
               <p>• Athlete: <strong>{watch("athleteName") || "—"}</strong></p>
               <p>• Sport: <strong>{watch("sport") || "—"}</strong></p>
               <p>• Evaluation date: <strong>{watch("evaluationDate") || "—"}</strong></p>
-              <p>• Exertional stages entered: <strong>{(watch("stages") ?? []).filter((s) => s.heartRate).length}</strong></p>
+              <p>• Exertional stop reason: <strong>{watch("stopReason") || "—"}</strong></p>
             </div>
           </Card>
         )}

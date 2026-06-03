@@ -63,12 +63,12 @@ export function generateClinicalInsights(e: Evaluation): ClinicalInsight[] {
   } else if (exertional.exertionalTolerance === "Unable to complete") {
     insights.push({ domain: "Exertional", level: "flag", text: "Athlete was unable to complete exertional testing due to early symptom provocation." });
   } else {
-    const hr = exertional.symptomThresholdHR;
+    const where = exertional.symptomThresholdInfo;
     insights.push({
       domain: "Exertional",
       level: "caution",
-      text: hr
-        ? `Symptom-limited exertional tolerance. Symptoms provoked at HR ${hr} bpm.`
+      text: where
+        ? `Symptom-limited exertional tolerance. Symptoms first provoked at: ${where}.`
         : "Exertional testing was symptom-limited.",
     });
   }
@@ -144,13 +144,13 @@ export function generatePatientInsights(e: Evaluation): PatientInsight[] {
       detail: "Your symptoms increased during low-level exercise. This is common after a concussion and helps your clinician understand where to start your recovery program.",
     });
   } else {
-    const hr = exertional.symptomThresholdHR;
+    const where = exertional.symptomThresholdInfo;
     insights.push({
       domain: "Exercise Tolerance",
       emoji: "🟡",
       headline: "You were able to exercise but symptoms increased at higher intensities",
-      detail: hr
-        ? `Your symptoms started to increase when your heart rate reached around ${hr} bpm. This gives your clinician a starting point for your exercise rehabilitation program.`
+      detail: where
+        ? `Your symptoms started to increase during ${where}. This gives your clinician a starting point for your exercise rehabilitation program.`
         : "Your symptoms increased at higher exercise intensities. Your clinician will use this information to set safe exercise targets.",
     });
   }

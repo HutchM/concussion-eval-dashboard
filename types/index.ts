@@ -97,14 +97,32 @@ export interface VOMSResults {
 
 // ─── Exertional Testing ────────────────────────────────────────────────────────
 
-export interface ExertionalStage {
-  stage: number;
-  speed?: number;       // km/h or mph
-  incline?: number;     // %
-  duration?: number;    // minutes
+export const EXERTIONAL_STAGE_DEFS = [
+  { id: 1, name: "Cardiovascular Load",          hasTasks: true  },
+  { id: 2, name: "Head Acceleration / Movement", hasTasks: true  },
+  { id: 3, name: "Dual Task",                    hasTasks: true  },
+  { id: 4, name: "Multi-planar / High Exertion", hasTasks: false },
+] as const;
+
+export const EXERTIONAL_TASK_NAMES = ["Squats", "Lunges", "Hip Hinges"] as const;
+export type ExertionalTaskName = (typeof EXERTIONAL_TASK_NAMES)[number];
+
+export interface ExertionalTaskResult {
+  task: ExertionalTaskName;
   heartRate: number;    // bpm
   rpe: number;          // Borg 6–20
   symptomScore: number; // 0–10
+  notes?: string;
+}
+
+export interface ExertionalStageResult {
+  stageId: number;
+  stageName: string;
+  tasks: ExertionalTaskResult[]; // Squats, Lunges, Hip Hinges for stages 1–3
+  // Stage 4 uses these direct metrics (no sub-tasks)
+  heartRate?: number;
+  rpe?: number;
+  symptomScore?: number;
   notes?: string;
 }
 
@@ -116,10 +134,10 @@ export type StopReason =
   | "Other";
 
 export interface ExertionalResults {
-  stages: ExertionalStage[];
+  stages: ExertionalStageResult[];
   restingHeartRate: number;
   maxHeartRate?: number;
-  symptomThresholdHR?: number; // HR when symptoms first increased
+  symptomThresholdInfo?: string; // plain text e.g. "Stage 2 – Lunges"
   stopReason: StopReason;
   exertionalTolerance: "Full" | "Symptom-limited" | "Unable to complete";
   notes?: string;

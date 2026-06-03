@@ -38,14 +38,26 @@ const eval1VOMS = [
 
 const eval1Exertional = calculateExertionalResults({
   stages: [
-    { stage: 1, speed: 3.2, incline: 0, duration: 2, heartRate: 78, rpe: 8, symptomScore: 3 },
-    { stage: 2, speed: 4.0, incline: 0, duration: 2, heartRate: 95, rpe: 10, symptomScore: 3 },
-    { stage: 3, speed: 4.8, incline: 2, duration: 2, heartRate: 110, rpe: 12, symptomScore: 4 },
-    { stage: 4, speed: 5.6, incline: 4, duration: 2, heartRate: 126, rpe: 14, symptomScore: 6 },
+    {
+      stageId: 1, stageName: "Cardiovascular Load",
+      tasks: [
+        { task: "Squats",     heartRate: 88,  rpe: 9,  symptomScore: 0 },
+        { task: "Lunges",     heartRate: 95,  rpe: 10, symptomScore: 0 },
+        { task: "Hip Hinges", heartRate: 100, rpe: 11, symptomScore: 1 },
+      ],
+    },
+    {
+      stageId: 2, stageName: "Head Acceleration / Movement",
+      tasks: [
+        { task: "Squats",     heartRate: 108, rpe: 12, symptomScore: 2 },
+        { task: "Lunges",     heartRate: 115, rpe: 13, symptomScore: 3 },
+        { task: "Hip Hinges", heartRate: 120, rpe: 14, symptomScore: 4, notes: "Headache increased" },
+      ],
+    },
   ],
   restingHeartRate: 68,
   stopReason: "Symptom provocation",
-  notes: "Headache and dizziness increased notably at stage 4.",
+  notes: "Stopped at Stage 2 Hip Hinges due to significant headache increase.",
 });
 
 export const SAMPLE_EVALUATIONS: Evaluation[] = [
@@ -99,17 +111,39 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
     ]),
     exertional: calculateExertionalResults({
       stages: [
-        { stage: 1, speed: 3.2, incline: 0, duration: 2, heartRate: 75, rpe: 7, symptomScore: 1 },
-        { stage: 2, speed: 4.0, incline: 0, duration: 2, heartRate: 92, rpe: 9, symptomScore: 1 },
-        { stage: 3, speed: 4.8, incline: 2, duration: 2, heartRate: 108, rpe: 11, symptomScore: 1 },
-        { stage: 4, speed: 5.6, incline: 4, duration: 2, heartRate: 122, rpe: 13, symptomScore: 1 },
-        { stage: 5, speed: 6.4, incline: 6, duration: 2, heartRate: 138, rpe: 15, symptomScore: 2 },
-        { stage: 6, speed: 7.2, incline: 8, duration: 2, heartRate: 152, rpe: 17, symptomScore: 2 },
-        { stage: 7, speed: 8.0, incline: 10, duration: 2, heartRate: 165, rpe: 18, symptomScore: 2 },
+        {
+          stageId: 1, stageName: "Cardiovascular Load",
+          tasks: [
+            { task: "Squats",     heartRate: 85,  rpe: 8,  symptomScore: 0 },
+            { task: "Lunges",     heartRate: 90,  rpe: 9,  symptomScore: 0 },
+            { task: "Hip Hinges", heartRate: 92,  rpe: 9,  symptomScore: 0 },
+          ],
+        },
+        {
+          stageId: 2, stageName: "Head Acceleration / Movement",
+          tasks: [
+            { task: "Squats",     heartRate: 100, rpe: 11, symptomScore: 0 },
+            { task: "Lunges",     heartRate: 105, rpe: 11, symptomScore: 0 },
+            { task: "Hip Hinges", heartRate: 108, rpe: 12, symptomScore: 0 },
+          ],
+        },
+        {
+          stageId: 3, stageName: "Dual Task",
+          tasks: [
+            { task: "Squats",     heartRate: 115, rpe: 13, symptomScore: 1 },
+            { task: "Lunges",     heartRate: 120, rpe: 13, symptomScore: 1 },
+            { task: "Hip Hinges", heartRate: 124, rpe: 14, symptomScore: 1 },
+          ],
+        },
+        {
+          stageId: 4, stageName: "Multi-planar / High Exertion",
+          tasks: [], heartRate: 148, rpe: 16, symptomScore: 1,
+          notes: "Completed full protocol without significant symptom change.",
+        },
       ],
       restingHeartRate: 62,
       stopReason: "Protocol complete",
-      notes: "Completed full protocol. Minimal symptom response throughout.",
+      notes: "Full protocol completed. Minimal symptom response throughout.",
     }),
     completedAt: "2024-11-14T14:00:00Z",
   },
@@ -163,12 +197,17 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
     ]),
     exertional: calculateExertionalResults({
       stages: [
-        { stage: 1, speed: 3.2, incline: 0, duration: 1, heartRate: 82, rpe: 9, symptomScore: 5 },
-        { stage: 2, speed: 3.2, incline: 0, duration: 1, heartRate: 90, rpe: 10, symptomScore: 8 },
+        {
+          stageId: 1, stageName: "Cardiovascular Load",
+          tasks: [
+            { task: "Squats",     heartRate: 90, rpe: 10, symptomScore: 5 },
+            { task: "Lunges",     heartRate: 98, rpe: 11, symptomScore: 7, notes: "Reported severe headache and nausea" },
+          ],
+        },
       ],
       restingHeartRate: 72,
       stopReason: "Symptom provocation",
-      notes: "Test stopped early. Patient reported severe headache increase and nausea within first 2 stages.",
+      notes: "Stopped during Stage 1 Lunges. Severe headache and nausea. Patient unable to continue.",
     }),
     completedAt: "2024-11-16T09:15:00Z",
   },
