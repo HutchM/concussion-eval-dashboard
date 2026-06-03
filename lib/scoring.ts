@@ -35,11 +35,22 @@ export function calculateVOMSResults(tests: VOMSTestResult[]): VOMSResults {
   return { tests, provokedCount, anyProvoked, overallFlag };
 }
 
-export function isVOMSProvoked(
-  test: Pick<VOMSTestResult, "changeScore" | "npcDistance">
-): boolean {
-  if (test.npcDistance !== undefined) return test.npcDistance > 5;
-  return test.changeScore >= 2;
+export function buildVOMSTestResult(
+  test: VOMSTestResult["test"],
+  pre: VOMSTestResult["pre"],
+  post: VOMSTestResult["post"],
+  npcDistance?: number
+): VOMSTestResult {
+  const changeScores = {
+    headache:  post.headache  - pre.headache,
+    dizziness: post.dizziness - pre.dizziness,
+    nausea:    post.nausea    - pre.nausea,
+    fogginess: post.fogginess - pre.fogginess,
+  };
+  const anySymptomProvoked = Object.values(changeScores).some((c) => c >= 2);
+  const npcProvoked = npcDistance !== undefined && npcDistance > 5;
+  const provoked = anySymptomProvoked || npcProvoked;
+  return { test, pre, post, changeScores, npcDistance, provoked };
 }
 
 // ─── Exertional Scoring ───────────────────────────────────────────────────────

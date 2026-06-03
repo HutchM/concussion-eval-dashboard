@@ -1,5 +1,5 @@
 import type { Evaluation } from "@/types";
-import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults } from "@/lib/scoring";
+import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults, buildVOMSTestResult } from "@/lib/scoring";
 import { SYMPTOM_LIST } from "@/types";
 
 // Helper to build a zeroed symptom scores object
@@ -27,13 +27,13 @@ const eval1Scores = {
 } as const;
 
 const eval1VOMS = [
-  { test: "Smooth Pursuit" as const, baselineSymptoms: 3, postSymptoms: 4, changeScore: 1, provoked: false },
-  { test: "Horizontal Saccades" as const, baselineSymptoms: 3, postSymptoms: 6, changeScore: 3, provoked: true },
-  { test: "Vertical Saccades" as const, baselineSymptoms: 3, postSymptoms: 5, changeScore: 2, provoked: true },
-  { test: "Near Point of Convergence" as const, baselineSymptoms: 3, postSymptoms: 5, changeScore: 2, npcDistance: 7, provoked: true },
-  { test: "Horizontal VOR" as const, baselineSymptoms: 3, postSymptoms: 4, changeScore: 1, provoked: false },
-  { test: "Vertical VOR" as const, baselineSymptoms: 3, postSymptoms: 4, changeScore: 1, provoked: false },
-  { test: "Visual Motion Sensitivity" as const, baselineSymptoms: 3, postSymptoms: 7, changeScore: 4, provoked: true },
+  buildVOMSTestResult("Smooth Pursuit",           { headache:2, dizziness:2, nausea:1, fogginess:2 }, { headache:2, dizziness:3, nausea:1, fogginess:3 }),
+  buildVOMSTestResult("Horizontal Saccades",      { headache:2, dizziness:2, nausea:1, fogginess:2 }, { headache:4, dizziness:5, nausea:2, fogginess:3 }),
+  buildVOMSTestResult("Vertical Saccades",        { headache:2, dizziness:2, nausea:1, fogginess:2 }, { headache:3, dizziness:4, nausea:2, fogginess:3 }),
+  buildVOMSTestResult("Near Point of Convergence",{ headache:2, dizziness:2, nausea:1, fogginess:2 }, { headache:3, dizziness:3, nausea:2, fogginess:3 }, 7),
+  buildVOMSTestResult("Horizontal VOR",           { headache:2, dizziness:2, nausea:1, fogginess:2 }, { headache:2, dizziness:3, nausea:1, fogginess:2 }),
+  buildVOMSTestResult("Vertical VOR",             { headache:2, dizziness:2, nausea:1, fogginess:2 }, { headache:2, dizziness:2, nausea:1, fogginess:3 }),
+  buildVOMSTestResult("Visual Motion Sensitivity",{ headache:2, dizziness:2, nausea:1, fogginess:2 }, { headache:5, dizziness:6, nausea:3, fogginess:4 }),
 ];
 
 const eval1Exertional = calculateExertionalResults({
@@ -89,13 +89,13 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
       "Sensitivity to light": 1,
     }, 85),
     voms: calculateVOMSResults([
-      { test: "Smooth Pursuit" as const, baselineSymptoms: 1, postSymptoms: 1, changeScore: 0, provoked: false },
-      { test: "Horizontal Saccades" as const, baselineSymptoms: 1, postSymptoms: 2, changeScore: 1, provoked: false },
-      { test: "Vertical Saccades" as const, baselineSymptoms: 1, postSymptoms: 2, changeScore: 1, provoked: false },
-      { test: "Near Point of Convergence" as const, baselineSymptoms: 1, postSymptoms: 1, changeScore: 0, npcDistance: 4, provoked: false },
-      { test: "Horizontal VOR" as const, baselineSymptoms: 1, postSymptoms: 1, changeScore: 0, provoked: false },
-      { test: "Vertical VOR" as const, baselineSymptoms: 1, postSymptoms: 1, changeScore: 0, provoked: false },
-      { test: "Visual Motion Sensitivity" as const, baselineSymptoms: 1, postSymptoms: 3, changeScore: 2, provoked: true },
+      buildVOMSTestResult("Smooth Pursuit",           { headache:1, dizziness:0, nausea:0, fogginess:1 }, { headache:1, dizziness:0, nausea:0, fogginess:1 }),
+      buildVOMSTestResult("Horizontal Saccades",      { headache:1, dizziness:0, nausea:0, fogginess:1 }, { headache:1, dizziness:1, nausea:0, fogginess:1 }),
+      buildVOMSTestResult("Vertical Saccades",        { headache:1, dizziness:0, nausea:0, fogginess:1 }, { headache:1, dizziness:1, nausea:0, fogginess:1 }),
+      buildVOMSTestResult("Near Point of Convergence",{ headache:1, dizziness:0, nausea:0, fogginess:1 }, { headache:1, dizziness:0, nausea:0, fogginess:1 }, 4),
+      buildVOMSTestResult("Horizontal VOR",           { headache:1, dizziness:0, nausea:0, fogginess:1 }, { headache:1, dizziness:0, nausea:0, fogginess:1 }),
+      buildVOMSTestResult("Vertical VOR",             { headache:1, dizziness:0, nausea:0, fogginess:1 }, { headache:1, dizziness:0, nausea:0, fogginess:1 }),
+      buildVOMSTestResult("Visual Motion Sensitivity",{ headache:1, dizziness:0, nausea:0, fogginess:1 }, { headache:1, dizziness:2, nausea:0, fogginess:2 }),
     ]),
     exertional: calculateExertionalResults({
       stages: [
@@ -153,13 +153,13 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
       "Irritability": 3,
     }, 15),
     voms: calculateVOMSResults([
-      { test: "Smooth Pursuit" as const, baselineSymptoms: 5, postSymptoms: 8, changeScore: 3, provoked: true },
-      { test: "Horizontal Saccades" as const, baselineSymptoms: 5, postSymptoms: 9, changeScore: 4, provoked: true },
-      { test: "Vertical Saccades" as const, baselineSymptoms: 5, postSymptoms: 8, changeScore: 3, provoked: true },
-      { test: "Near Point of Convergence" as const, baselineSymptoms: 5, postSymptoms: 9, changeScore: 4, npcDistance: 12, provoked: true },
-      { test: "Horizontal VOR" as const, baselineSymptoms: 5, postSymptoms: 9, changeScore: 4, provoked: true },
-      { test: "Vertical VOR" as const, baselineSymptoms: 5, postSymptoms: 8, changeScore: 3, provoked: true },
-      { test: "Visual Motion Sensitivity" as const, baselineSymptoms: 5, postSymptoms: 10, changeScore: 5, provoked: true },
+      buildVOMSTestResult("Smooth Pursuit",           { headache:4, dizziness:4, nausea:2, fogginess:4 }, { headache:6, dizziness:7, nausea:4, fogginess:6 }),
+      buildVOMSTestResult("Horizontal Saccades",      { headache:4, dizziness:4, nausea:2, fogginess:4 }, { headache:7, dizziness:8, nausea:5, fogginess:7 }),
+      buildVOMSTestResult("Vertical Saccades",        { headache:4, dizziness:4, nausea:2, fogginess:4 }, { headache:6, dizziness:7, nausea:4, fogginess:6 }),
+      buildVOMSTestResult("Near Point of Convergence",{ headache:4, dizziness:4, nausea:2, fogginess:4 }, { headache:7, dizziness:8, nausea:5, fogginess:7 }, 12),
+      buildVOMSTestResult("Horizontal VOR",           { headache:4, dizziness:4, nausea:2, fogginess:4 }, { headache:7, dizziness:8, nausea:5, fogginess:6 }),
+      buildVOMSTestResult("Vertical VOR",             { headache:4, dizziness:4, nausea:2, fogginess:4 }, { headache:6, dizziness:7, nausea:4, fogginess:6 }),
+      buildVOMSTestResult("Visual Motion Sensitivity",{ headache:4, dizziness:4, nausea:2, fogginess:4 }, { headache:8, dizziness:9, nausea:6, fogginess:8 }),
     ]),
     exertional: calculateExertionalResults({
       stages: [

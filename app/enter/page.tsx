@@ -10,8 +10,7 @@ import { VOMSEntryForm } from "@/components/entry/VOMSEntryForm";
 import { ExertionalEntryForm } from "@/components/entry/ExertionalEntryForm";
 import { Card } from "@/components/ui/Card";
 import { useEvaluationStore } from "@/store/evaluationStore";
-import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults, calcDaysSinceInjury } from "@/lib/scoring";
-import { isVOMSProvoked } from "@/lib/scoring";
+import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults, calcDaysSinceInjury, buildVOMSTestResult } from "@/lib/scoring";
 import { SYMPTOM_LIST, VOMS_TESTS } from "@/types";
 import type { SymptomScores, VOMSTestResult, ExertionalStage } from "@/types";
 import { clsx } from "clsx";
@@ -23,9 +22,11 @@ function defaultSymptoms(): Record<string, number> {
   return Object.fromEntries(SYMPTOM_LIST.map((s) => [s, 0]));
 }
 
+const zeroSymptoms = () => ({ headache: 0, dizziness: 0, nausea: 0, fogginess: 0 });
+
 // Build default VOMS values
-function defaultVOMS(): Record<string, { baseline: number; post: number; npcDistance?: number }> {
-  return Object.fromEntries(VOMS_TESTS.map((t) => [t, { baseline: 0, post: 0 }]));
+function defaultVOMS() {
+  return Object.fromEntries(VOMS_TESTS.map((t) => [t, { pre: zeroSymptoms(), post: zeroSymptoms() }]));
 }
 
 export default function EnterPage() {
@@ -59,15 +60,23 @@ export default function EnterPage() {
     ) as SymptomScores;
 
     const vomsTests: VOMSTestResult[] = VOMS_TESTS.map((test) => {
-      const entry = data.voms?.[test] ?? { baseline: 0, post: 0 };
-      const baseline = Number(entry.baseline ?? 0);
-      const post = Number(entry.post ?? 0);
-      const changeScore = post - baseline;
-      const npcDistance = test === "Near Point of Convergence" && entry.npcDistance !== undefined
+      const entry = data.voms?.[test];
+      const pre = {
+        headache:  Number(entry?.pre?.headache  ?? 0),
+        dizziness: Number(entry?.pre?.dizziness ?? 0),
+        nausea:    Number(entry?.pre?.nausea    ?? 0),
+        fogginess: Number(entry?.pre?.fogginess ?? 0),
+      };
+      const post = {
+        headache:  Number(entry?.post?.headache  ?? 0),
+        dizziness: Number(entry?.post?.dizziness ?? 0),
+        nausea:    Number(entry?.post?.nausea    ?? 0),
+        fogginess: Number(entry?.post?.fogginess ?? 0),
+      };
+      const npcDistance = test === "Near Point of Convergence" && entry?.npcDistance !== undefined
         ? Number(entry.npcDistance)
         : undefined;
-      const provoked = isVOMSProvoked({ changeScore, npcDistance });
-      return { test, baselineSymptoms: baseline, postSymptoms: post, changeScore, npcDistance, provoked };
+      return buildVOMSTestResult(test, pre, post, npcDistance);
     });
 
     const stages: ExertionalStage[] = (data.stages ?? []).map((s, i) => ({

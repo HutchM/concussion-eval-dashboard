@@ -68,13 +68,23 @@ export const VOMS_TESTS = [
 
 export type VOMSTestName = (typeof VOMS_TESTS)[number];
 
+export interface VOMSSymptomSet {
+  headache: number;  // 0–10
+  dizziness: number; // 0–10
+  nausea: number;    // 0–10
+  fogginess: number; // 0–10
+}
+
+export const VOMS_SYMPTOMS = ["headache", "dizziness", "nausea", "fogginess"] as const;
+export type VOMSSymptomName = (typeof VOMS_SYMPTOMS)[number];
+
 export interface VOMSTestResult {
   test: VOMSTestName;
-  baselineSymptoms: number; // 0–10
-  postSymptoms: number;     // 0–10
-  changeScore: number;      // auto-calculated
-  npcDistance?: number;     // cm — only for NPC test
-  provoked: boolean;        // change >= 2 (or NPC > 5 cm)
+  pre: VOMSSymptomSet;
+  post: VOMSSymptomSet;
+  changeScores: VOMSSymptomSet; // auto-calculated per symptom
+  npcDistance?: number;         // cm — only for NPC test
+  provoked: boolean;            // any change >= 2, or NPC > 5 cm
   notes?: string;
 }
 

@@ -37,8 +37,12 @@ export interface EntryFormValues {
   symptoms: Record<string, number>;
   percentageOfNormal: string;
 
-  // VOMS
-  voms: Record<string, { baseline: number; post: number; npcDistance?: number }>;
+  // VOMS — pre/post for each of 4 symptoms per test
+  voms: Record<string, {
+    pre:  { headache: number; dizziness: number; nausea: number; fogginess: number };
+    post: { headache: number; dizziness: number; nausea: number; fogginess: number };
+    npcDistance?: number;
+  }>;
 
   // Exertional
   restingHeartRate: string;
