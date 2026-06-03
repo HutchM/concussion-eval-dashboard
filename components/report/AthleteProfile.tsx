@@ -34,10 +34,6 @@ export function AthleteProfile({ athlete }: Props) {
             <p className="text-gray-400 text-xs uppercase tracking-wide">Days Post-Injury</p>
             <p className="font-bold text-indigo-600 text-lg">{athlete.daysSinceInjury}</p>
           </div>
-          <div className="col-span-2 sm:col-span-3">
-            <p className="text-gray-400 text-xs uppercase tracking-wide">Clinician</p>
-            <p className="font-medium text-gray-800">{athlete.clinicianName}</p>
-          </div>
         </div>
       </div>
       {athlete.notes && (

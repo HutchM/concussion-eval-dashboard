@@ -9,7 +9,7 @@ export interface Athlete {
   injuryDate: string; // ISO
   evaluationDate: string; // ISO
   daysSinceInjury: number;
-  clinicianName: string;
+  clinicianName?: string;
   notes?: string;
 }
 

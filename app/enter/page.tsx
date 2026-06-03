@@ -16,7 +16,7 @@ import { SYMPTOM_LIST, VOMS_TESTS } from "@/types";
 import type { SymptomScores, VOMSTestResult, ExertionalStage } from "@/types";
 import { clsx } from "clsx";
 
-const STEPS = ["Athlete Details", "Symptoms", "VOMS", "Exertional Testing", "Review & Save"];
+const STEPS = ["Profile", "Symptoms", "VOMS", "Exertional Testing", "Review & Save"];
 
 // Build default symptom values (all 0)
 function defaultSymptoms(): Record<string, number> {
@@ -93,7 +93,6 @@ export default function EnterPage() {
         injuryDate: data.injuryDate,
         evaluationDate: data.evaluationDate,
         daysSinceInjury,
-        clinicianName: data.clinicianName,
         notes: data.notes,
       },
       symptoms: calculateSymptomResults(symptomScores),
@@ -152,10 +151,10 @@ export default function EnterPage() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Step 0 — Athlete Details */}
+        {/* Step 0 — Profile */}
         {step === 0 && (
           <Card>
-            <h2 className="text-base font-semibold text-gray-900 mb-4">Athlete Details</h2>
+            <h2 className="text-base font-semibold text-gray-900 mb-4">Profile</h2>
             <AthleteForm register={register} errors={errors} />
           </Card>
         )}
@@ -200,7 +199,6 @@ export default function EnterPage() {
               <p>• Athlete: <strong>{watch("athleteName") || "—"}</strong></p>
               <p>• Sport: <strong>{watch("sport") || "—"}</strong></p>
               <p>• Evaluation date: <strong>{watch("evaluationDate") || "—"}</strong></p>
-              <p>• Clinician: <strong>{watch("clinicianName") || "—"}</strong></p>
               <p>• Exertional stages entered: <strong>{(watch("stages") ?? []).filter((s) => s.heartRate).length}</strong></p>
             </div>
           </Card>

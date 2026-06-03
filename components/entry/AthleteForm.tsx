@@ -43,9 +43,6 @@ export function AthleteForm({ register, errors }: Props) {
         <Field label="Evaluation Date" required error={errors.evaluationDate?.message}>
           <input type="date" {...register("evaluationDate", { required: "Required" })} className={inputCls} />
         </Field>
-        <Field label="Clinician Name" required error={errors.clinicianName?.message}>
-          <input {...register("clinicianName", { required: "Required" })} className={inputCls} placeholder="Dr. Jane Smith" />
-        </Field>
       </div>
       <Field label="Clinical Notes" error={errors.notes?.message}>
         <textarea {...register("notes")} rows={3} className={inputCls} placeholder="Optional notes about this evaluation..." />

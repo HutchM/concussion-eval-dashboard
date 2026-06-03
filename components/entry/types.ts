@@ -31,7 +31,6 @@ export interface EntryFormValues {
   position?: string;
   injuryDate: string;
   evaluationDate: string;
-  clinicianName: string;
   notes?: string;
 
   // Symptoms — keyed by symptom name
