@@ -59,17 +59,17 @@ export function calculateExertionalResults(
 ): ExertionalResults {
   const { stages } = partial;
 
-  // Find first task where symptoms increased above 0
+  // Find first task where symptoms were provoked
   let symptomThresholdInfo: string | undefined;
   outer: for (const stage of stages) {
     if (stage.tasks.length > 0) {
       for (const task of stage.tasks) {
-        if (task.symptomScore > 0) {
+        if (task.symptomProvoked) {
           symptomThresholdInfo = `${stage.stageName} – ${task.task}`;
           break outer;
         }
       }
-    } else if ((stage.symptomScore ?? 0) > 0) {
+    } else if (stage.symptomProvoked) {
       symptomThresholdInfo = stage.stageName;
       break;
     }
@@ -77,7 +77,8 @@ export function calculateExertionalResults(
 
   let exertionalTolerance: ExertionalResults["exertionalTolerance"] = "Full";
   if (partial.stopReason === "Symptom provocation") {
-    const stoppedEarly = stages.length <= 1 && stages[0]?.tasks.length <= 1;
+    const firstStage = stages[0];
+    const stoppedEarly = stages.length <= 1 && (firstStage?.tasks.length ?? 0) <= 1;
     exertionalTolerance = stoppedEarly ? "Unable to complete" : "Symptom-limited";
   }
 

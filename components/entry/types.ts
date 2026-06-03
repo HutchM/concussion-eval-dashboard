@@ -1,8 +1,14 @@
 import type { SymptomName, VOMSTestName, StopReason } from "@/types";
 
+export interface SymptomOccurrenceEntry {
+  name: string;
+  increase: string;
+}
+
 export interface ExertionalTaskEntry {
   rpe: string;
-  symptomScore: string;
+  symptomProvoked: string; // "yes" | "no" | ""
+  symptoms: SymptomOccurrenceEntry[];
   notes: string;
 }
 
@@ -33,6 +39,6 @@ export interface EntryFormValues {
   exertionalNotes?: string;
   // Stages 1–3: keyed by stageId, then taskName
   exertionalTasks: Record<string, Record<string, ExertionalTaskEntry>>;
-  // Stage 4: single entry
+  // Stage 4: single entry (same structure, no task name)
   exertionalStage4: ExertionalTaskEntry;
 }

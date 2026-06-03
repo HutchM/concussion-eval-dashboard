@@ -47,7 +47,7 @@ export default function EnterPage() {
       voms: defaultVOMS(),
       stopReason: "Protocol complete",
       exertionalTasks: {},
-      exertionalStage4: { rpe: "", symptomScore: "", notes: "" },
+      exertionalStage4: { rpe: "", symptomProvoked: "", symptoms: [], notes: "" },
       immediateMemory: { trial1: "", trial2: "", trial3: "" },
     },
   });
@@ -97,20 +97,26 @@ export default function EnterPage() {
         ...(stageDef.id === 1 && immediateMemoryResult ? { immediateMemory: immediateMemoryResult } : {}),
         tasks: EXERTIONAL_TASK_NAMES.map((task) => {
           const entry = data.exertionalTasks?.[stageDef.id]?.[task];
-          return {
-            task,
-            rpe: entry?.rpe ? Number(entry.rpe) : undefined,
-            symptomScore: Number(entry?.symptomScore) || 0,
-            notes: entry?.notes || undefined,
-          };
-        }).filter((t) => t.symptomScore > 0 || t.rpe),
+          const symptomProvoked = entry?.symptomProvoked === "yes";
+          const symptomDetails = symptomProvoked
+            ? (entry?.symptoms ?? [])
+                .filter((s: { name: string; increase: string }) => s.name)
+                .map((s: { name: string; increase: string }) => ({ symptom: s.name, increase: Number(s.increase) || 0 }))
+            : [];
+          return { task, rpe: entry?.rpe ? Number(entry.rpe) : undefined, symptomProvoked, symptomDetails, notes: entry?.notes || undefined };
+        }).filter((t) => t.rpe || t.symptomProvoked),
       })).filter((s) => s.tasks.length > 0),
-      ...(data.exertionalStage4?.symptomScore || data.exertionalStage4?.rpe ? [{
+      ...(data.exertionalStage4?.rpe || data.exertionalStage4?.symptomProvoked === "yes" ? [{
         stageId: 4,
         stageName: "Multi-planar / High Exertion",
         tasks: [] as ExertionalStageResult["tasks"],
         rpe: data.exertionalStage4.rpe ? Number(data.exertionalStage4.rpe) : undefined,
-        symptomScore: Number(data.exertionalStage4.symptomScore) || undefined,
+        symptomProvoked: data.exertionalStage4.symptomProvoked === "yes",
+        symptomDetails: data.exertionalStage4.symptomProvoked === "yes"
+          ? (data.exertionalStage4.symptoms ?? [])
+              .filter((s: { name: string; increase: string }) => s.name)
+              .map((s: { name: string; increase: string }) => ({ symptom: s.name, increase: Number(s.increase) || 0 }))
+          : [],
         notes: data.exertionalStage4.notes || undefined,
       }] : []),
     ];

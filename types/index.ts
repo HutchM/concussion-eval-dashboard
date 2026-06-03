@@ -107,10 +107,16 @@ export const EXERTIONAL_STAGE_DEFS = [
 export const EXERTIONAL_TASK_NAMES = ["Squats", "Lunges", "Hip Hinges"] as const;
 export type ExertionalTaskName = (typeof EXERTIONAL_TASK_NAMES)[number];
 
+export interface SymptomOccurrence {
+  symptom: string; // name from SYMPTOM_LIST
+  increase: number; // amount of increase
+}
+
 export interface ExertionalTaskResult {
   task: ExertionalTaskName;
-  rpe?: number;         // Borg 6–20
-  symptomScore: number; // 0–10
+  rpe?: number;
+  symptomProvoked: boolean;
+  symptomDetails: SymptomOccurrence[];
   notes?: string;
 }
 
@@ -140,7 +146,8 @@ export interface ExertionalStageResult {
   tasks: ExertionalTaskResult[]; // Squats, Lunges, Hip Hinges for stages 1–3
   // Stage 4 uses these direct metrics (no sub-tasks)
   rpe?: number;
-  symptomScore?: number;
+  symptomProvoked?: boolean;
+  symptomDetails?: SymptomOccurrence[];
   notes?: string;
   // Stage 1 only
   immediateMemory?: ImmediateMemoryResult;

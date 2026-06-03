@@ -21,11 +21,6 @@ const STAGE_HEADING = [
   "text-emerald-700",
 ];
 
-function symptomStyle(score: number) {
-  if (score >= 4) return "text-red-600 font-bold";
-  if (score >= 1) return "text-amber-600 font-medium";
-  return "text-gray-500";
-}
 
 export function ExertionalSection({ exertional }: Props) {
   const totalTaskCount = exertional.stages.reduce((sum, s) => sum + (s.tasks.length > 0 ? s.tasks.length : 1), 0);
@@ -128,7 +123,8 @@ export function ExertionalSection({ exertional }: Props) {
                   <tr className="border-b border-inherit">
                     <th className="text-left px-4 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Task</th>
                     <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">RPE</th>
-                    <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Symptoms</th>
+                    <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Symptom</th>
+                    <th className="text-left px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Symptoms Reported</th>
                     <th className="text-left px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Notes</th>
                   </tr>
                 </thead>
@@ -137,8 +133,22 @@ export function ExertionalSection({ exertional }: Props) {
                     <tr key={task.task} className="border-t border-inherit last:border-0">
                       <td className="px-4 py-2.5 font-medium text-gray-800">{task.task}</td>
                       <td className="text-center px-3 py-2.5 text-gray-600">{task.rpe ?? "—"}</td>
-                      <td className={clsx("text-center px-3 py-2.5", symptomStyle(task.symptomScore))}>
-                        {task.symptomScore}/10
+                      <td className="text-center px-3 py-2.5">
+                        {task.symptomProvoked
+                          ? <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Yes</span>
+                          : <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">No</span>
+                        }
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {task.symptomDetails.length > 0 ? (
+                          <div className="flex flex-col gap-0.5">
+                            {task.symptomDetails.map((d, i) => (
+                              <span key={i} className="text-xs text-gray-700">
+                                {d.symptom} <span className="text-orange-500 font-medium">↑{d.increase}</span>
+                              </span>
+                            ))}
+                          </div>
+                        ) : <span className="text-xs text-gray-400">—</span>}
                       </td>
                       <td className="px-3 py-2.5 text-xs text-gray-400">{task.notes ?? "—"}</td>
                     </tr>
@@ -146,17 +156,26 @@ export function ExertionalSection({ exertional }: Props) {
                 </tbody>
               </table>
             ) : (
-              <div className="px-4 py-3 grid grid-cols-2 gap-4 text-sm">
+              <div className="px-4 py-3 grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-xs text-gray-400">RPE</p>
                   <p className="font-medium text-gray-700">{stage.rpe ?? "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Symptoms</p>
-                  <p className={clsx("font-medium", symptomStyle(stage.symptomScore ?? 0))}>
-                    {stage.symptomScore ?? "—"}/10
-                  </p>
+                  <p className="text-xs text-gray-400">Symptom</p>
+                  {stage.symptomProvoked
+                    ? <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Yes</span>
+                    : <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">No</span>
+                  }
                 </div>
+                {(stage.symptomDetails ?? []).length > 0 && (
+                  <div>
+                    <p className="text-xs text-gray-400 mb-0.5">Symptoms reported</p>
+                    {stage.symptomDetails!.map((d, i) => (
+                      <p key={i} className="text-xs text-gray-700">{d.symptom} <span className="text-orange-500 font-medium">↑{d.increase}</span></p>
+                    ))}
+                  </div>
+                )}
                 {stage.notes && <p className="col-span-3 text-xs text-gray-400 italic">{stage.notes}</p>}
               </div>
             )}
