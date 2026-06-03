@@ -160,39 +160,58 @@ export function ExertionalEntryForm({ register, control, watch, setValue, onHRFi
 
             {/* Immediate Memory — Stage 1 only */}
             {stageDef.id === 1 && (
-              <div className="mx-4 mt-4 rounded-lg border border-blue-200 bg-white p-4">
-                <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <div className="mx-4 mt-4 rounded-lg border border-blue-200 bg-white overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-2.5 bg-blue-50 border-b border-blue-200">
                   <div>
                     <h5 className="text-sm font-semibold text-gray-800">Immediate Memory — 3 Trials</h5>
-                    <p className="text-xs text-gray-500 mt-0.5">Read the 12 words aloud. Ask the patient to repeat back as many as possible. Score each trial out of 12.</p>
+                    <p className="text-xs text-gray-500">Read each word aloud. Score how many the patient recalls per trial.</p>
                   </div>
-                  <div className="text-right shrink-0">
+                  <div className="text-right shrink-0 ml-4">
                     <p className="text-xs text-gray-400 uppercase tracking-wide">Total</p>
-                    <p className={clsx("text-2xl font-bold", imTotal >= 30 ? "text-emerald-600" : imTotal >= 24 ? "text-amber-600" : imTotal > 0 ? "text-red-600" : "text-gray-300")}>
+                    <p className={clsx("text-2xl font-bold leading-tight", imTotal >= 30 ? "text-emerald-600" : imTotal >= 24 ? "text-amber-600" : imTotal > 0 ? "text-red-600" : "text-gray-300")}>
                       {imTotal}<span className="text-sm font-normal text-gray-400">/36</span>
                     </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 mb-4">
-                  {IMMEDIATE_MEMORY_WORDS.map((word, i) => (
-                    <div key={word} className="flex items-center gap-1.5 bg-gray-50 rounded-md px-2 py-1">
-                      <span className="text-xs text-gray-400 w-4 shrink-0">{i + 1}.</span>
-                      <span className="text-xs font-medium text-gray-700">{word}</span>
+                {/* Two-column body: words left, trials right */}
+                <div className="flex gap-0 divide-x divide-blue-100">
+                  {/* Word list */}
+                  <div className="flex-1 p-3">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                      {IMMEDIATE_MEMORY_WORDS.map((word, i) => (
+                        <div key={word} className="flex items-center gap-1.5 py-0.5">
+                          <span className="text-xs text-gray-400 w-5 shrink-0 text-right">{i + 1}.</span>
+                          <span className="text-sm font-medium text-gray-800">{word}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {([1, 2, 3] as const).map((trial) => (
-                    <div key={trial}>
-                      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Trial {trial}</label>
-                      <div className="flex items-center gap-2">
-                        <input type="number" min="0" max="12"
-                          {...register(`immediateMemory.trial${trial}` as const)}
-                          placeholder="0" className={clsx(inputCls, "w-20")} />
-                        <span className="text-sm text-gray-400">/ 12</span>
-                      </div>
+                  </div>
+                  {/* Trial scores */}
+                  <div className="shrink-0 p-3 flex flex-col justify-center gap-3 w-44">
+                    {([1, 2, 3] as const).map((trial) => {
+                      const val = trial === 1 ? t1 : trial === 2 ? t2 : t3;
+                      return (
+                        <div key={trial} className="flex items-center gap-2">
+                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide w-14 shrink-0">Trial {trial}</label>
+                          <input
+                            type="number" min="0" max="12"
+                            {...register(`immediateMemory.trial${trial}` as const)}
+                            placeholder="0"
+                            className="w-14 rounded border border-gray-300 px-2 py-1.5 text-sm text-center focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                          />
+                          <span className="text-xs text-gray-400 shrink-0">/ 12</span>
+                        </div>
+                      );
+                    })}
+                    <div className="border-t border-blue-100 pt-2 flex items-center gap-2">
+                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide w-14 shrink-0">Total</span>
+                      <span className={clsx("text-sm font-bold w-14 text-center", imTotal >= 30 ? "text-emerald-600" : imTotal >= 24 ? "text-amber-600" : imTotal > 0 ? "text-red-600" : "text-gray-300")}>
+                        {imTotal}
+                      </span>
+                      <span className="text-xs text-gray-400 shrink-0">/ 36</span>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             )}
