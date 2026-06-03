@@ -35,6 +35,7 @@ export interface EntryFormValues {
 
   // Symptoms — keyed by symptom name
   symptoms: Record<string, number>;
+  percentageOfNormal: string;
 
   // VOMS
   voms: Record<string, { baseline: number; post: number; npcDistance?: number }>;

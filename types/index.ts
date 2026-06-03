@@ -51,6 +51,7 @@ export interface SymptomResults {
   totalCount: number;   // number of symptoms > 0
   totalSeverity: number; // sum of all ratings (max 132)
   severityCategory: "None" | "Mild" | "Moderate" | "Severe";
+  percentageOfNormal?: number; // 0–100, patient-reported
 }
 
 // ─── VOMS ──────────────────────────────────────────────────────────────────────

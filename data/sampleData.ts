@@ -60,10 +60,9 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
       injuryDate: "2024-11-10",
       evaluationDate: "2024-11-17",
       daysSinceInjury: 7,
-      clinicianName: "Dr. Sarah Chen",
       notes: "First post-injury evaluation. Patient reports difficulty at school.",
     },
-    symptoms: calculateSymptomResults(eval1Scores),
+    symptoms: calculateSymptomResults(eval1Scores, 40),
     voms: calculateVOMSResults(eval1VOMS),
     exertional: eval1Exertional,
     completedAt: "2024-11-17T10:30:00Z",
@@ -81,7 +80,6 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
       injuryDate: "2024-10-28",
       evaluationDate: "2024-11-14",
       daysSinceInjury: 17,
-      clinicianName: "Dr. James Park",
       notes: "Second evaluation. Significant improvement noted since initial assessment.",
     },
     symptoms: calculateSymptomResults({
@@ -89,7 +87,7 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
       "Headache": 1,
       "Fatigue or low energy": 2,
       "Sensitivity to light": 1,
-    }),
+    }, 85),
     voms: calculateVOMSResults([
       { test: "Smooth Pursuit" as const, baselineSymptoms: 1, postSymptoms: 1, changeScore: 0, provoked: false },
       { test: "Horizontal Saccades" as const, baselineSymptoms: 1, postSymptoms: 2, changeScore: 1, provoked: false },
@@ -128,12 +126,12 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
       injuryDate: "2024-11-13",
       evaluationDate: "2024-11-16",
       daysSinceInjury: 3,
-      clinicianName: "Dr. Sarah Chen",
       notes: "Acute presentation. Currently unable to attend school. Sleep severely disrupted.",
     },
     symptoms: calculateSymptomResults({
       ...zeroScores(),
       "Headache": 5,
+
       "Pressure in head": 5,
       "Neck pain": 4,
       "Nausea or vomiting": 3,
@@ -153,7 +151,7 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
       "Trouble falling asleep": 4,
       "More emotional than usual": 3,
       "Irritability": 3,
-    }),
+    }, 15),
     voms: calculateVOMSResults([
       { test: "Smooth Pursuit" as const, baselineSymptoms: 5, postSymptoms: 8, changeScore: 3, provoked: true },
       { test: "Horizontal Saccades" as const, baselineSymptoms: 5, postSymptoms: 9, changeScore: 4, provoked: true },

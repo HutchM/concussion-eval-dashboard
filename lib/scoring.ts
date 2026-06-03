@@ -9,7 +9,7 @@ import type {
 
 // ─── Symptom Scoring ──────────────────────────────────────────────────────────
 
-export function calculateSymptomResults(scores: SymptomScores): SymptomResults {
+export function calculateSymptomResults(scores: SymptomScores, percentageOfNormal?: number): SymptomResults {
   const values = Object.values(scores) as number[];
   const totalCount = values.filter((v) => v > 0).length;
   const totalSeverity = values.reduce((sum, v) => sum + v, 0);
@@ -19,7 +19,7 @@ export function calculateSymptomResults(scores: SymptomScores): SymptomResults {
   else if (totalSeverity > 20 && totalSeverity <= 40) severityCategory = "Moderate";
   else if (totalSeverity > 40) severityCategory = "Severe";
 
-  return { scores, totalCount, totalSeverity, severityCategory };
+  return { scores, totalCount, totalSeverity, severityCategory, percentageOfNormal };
 }
 
 // ─── VOMS Scoring ─────────────────────────────────────────────────────────────

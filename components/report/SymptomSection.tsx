@@ -15,6 +15,14 @@ export function SymptomSection({ symptoms }: Props) {
           action={
             <div className="flex items-center gap-3">
               {severityBadge(symptoms.severityCategory)}
+              {symptoms.percentageOfNormal !== undefined && (
+                <div className="text-right">
+                  <p className="text-xs text-gray-400">Feels Normal</p>
+                  <p className={`text-xl font-bold ${symptoms.percentageOfNormal >= 80 ? "text-emerald-600" : symptoms.percentageOfNormal >= 50 ? "text-amber-600" : "text-red-600"}`}>
+                    {symptoms.percentageOfNormal}%
+                  </p>
+                </div>
+              )}
               <div className="text-right">
                 <p className="text-xs text-gray-400">Total Score</p>
                 <p className="text-xl font-bold text-gray-800">{symptoms.totalSeverity}<span className="text-sm font-normal text-gray-400">/132</span></p>

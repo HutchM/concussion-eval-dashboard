@@ -40,6 +40,7 @@ export default function EnterPage() {
     defaultValues: {
       evaluationDate: today,
       symptoms: defaultSymptoms(),
+      percentageOfNormal: "80",
       voms: defaultVOMS(),
       stopReason: "Protocol complete",
       stages: [
@@ -95,7 +96,7 @@ export default function EnterPage() {
         daysSinceInjury,
         notes: data.notes,
       },
-      symptoms: calculateSymptomResults(symptomScores),
+      symptoms: calculateSymptomResults(symptomScores, data.percentageOfNormal ? Number(data.percentageOfNormal) : undefined),
       voms: calculateVOMSResults(vomsTests),
       exertional: calculateExertionalResults({
         stages,

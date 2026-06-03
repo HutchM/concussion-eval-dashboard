@@ -7,6 +7,7 @@ import { clsx } from "clsx";
 interface Props {
   register: UseFormRegister<EntryFormValues>;
   control: Control<EntryFormValues>;
+  percentageOfNormal?: number;
 }
 
 const RATING_LABELS = ["0\nNone", "1\nVery mild", "2\nMild", "3\nModerate", "4\nMod-severe", "5\nSevere", "6\nMax"];
@@ -38,11 +39,37 @@ function RatingButton({ value, current, onClick }: { value: number; current: num
 
 export function SymptomEntryForm({ register, control }: Props) {
   const symptomValues = useWatch({ control, name: "symptoms" }) ?? {};
+  const percentVal = useWatch({ control, name: "percentageOfNormal" });
   const total = Object.values(symptomValues).reduce((s: number, v) => s + (Number(v) || 0), 0);
   const count = Object.values(symptomValues).filter((v) => Number(v) > 0).length;
+  const pct = Number(percentVal);
 
   return (
     <div>
+      {/* Percentage of normal question */}
+      <div className="mb-6 p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
+        <label className="block text-sm font-semibold text-gray-800 mb-3">
+          If 100% is perfectly normal, what percentage of normal do you feel right now?
+        </label>
+        <div className="flex items-center gap-4">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="5"
+            {...register("percentageOfNormal")}
+            className="flex-1 accent-indigo-600"
+          />
+          <span className={`text-2xl font-bold w-16 text-right ${pct >= 80 ? "text-emerald-600" : pct >= 50 ? "text-amber-600" : "text-red-600"}`}>
+            {pct || 0}%
+          </span>
+        </div>
+        <div className="flex justify-between text-xs text-gray-400 mt-1 px-0.5">
+          <span>0% — Not normal at all</span>
+          <span>100% — Completely normal</span>
+        </div>
+      </div>
+
       {/* Totals bar */}
       <div className="flex gap-6 mb-4 p-3 bg-gray-50 rounded-lg">
         <div>
