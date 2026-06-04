@@ -113,14 +113,14 @@ export function SymptomSection({ symptoms }: Props) {
         />
 
         {/* Domain summary bar */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-2">
+        <div className="flex flex-wrap gap-2 mb-2">
           {SYMPTOM_CATEGORIES.filter((c) => c.name !== "Other").map((cat) => {
             const score = categoryScore(cat, symptoms.scores);
             const max = categoryMax(cat);
             const pct = max > 0 ? Math.round((score / max) * 100) : 0;
             const style = CATEGORY_STYLES[cat.color];
             return (
-              <div key={cat.name} className="text-center">
+              <div key={cat.name} className="text-center min-w-[80px] flex-1">
                 <p className="text-xs text-gray-500 font-medium truncate mb-1">{cat.name}</p>
                 <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1">
                   <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: style.bar }} />
