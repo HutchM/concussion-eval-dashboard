@@ -91,15 +91,6 @@ export function ExertionalSection({ exertional }: Props) {
                       </p>
                     </div>
                   </div>
-                  {/* Word list */}
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-1 mb-3">
-                    {stage.immediateMemory.words.map((word, i) => (
-                      <div key={word} className="flex items-center gap-1 bg-gray-50 rounded px-2 py-1">
-                        <span className="text-xs text-gray-400 w-4 shrink-0">{i + 1}.</span>
-                        <span className="text-xs font-medium text-gray-700">{word}</span>
-                      </div>
-                    ))}
-                  </div>
                   {/* Trial scores */}
                   <div className="flex gap-6">
                     {[
