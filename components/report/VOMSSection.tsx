@@ -1,3 +1,4 @@
+import React from "react";
 import type { VOMSResults } from "@/types";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { flagBadge } from "@/components/ui/Badge";
@@ -59,11 +60,11 @@ export function VOMSSection({ voms }: Props) {
             <tr className="border-b border-gray-100 bg-gray-50">
               <th></th>
               {SYMPTOM_COLS.map(({ label }) => (
-                <>
-                  <th key={`${label}-pre`}  className="text-center py-1 text-xs text-gray-400 font-normal border-l border-gray-100 w-10">Pre</th>
-                  <th key={`${label}-post`} className="text-center py-1 text-xs text-gray-400 font-normal w-10">Post</th>
-                  <th key={`${label}-chg`}  className="text-center py-1 text-xs text-gray-400 font-normal w-10">Δ</th>
-                </>
+                <React.Fragment key={label}>
+                  <th className="text-center py-1 text-xs text-gray-400 font-normal border-l border-gray-100 w-10">Pre</th>
+                  <th className="text-center py-1 text-xs text-gray-400 font-normal w-10">Post</th>
+                  <th className="text-center py-1 text-xs text-gray-400 font-normal w-10">Δ</th>
+                </React.Fragment>
               ))}
               <th></th>
             </tr>
@@ -82,13 +83,13 @@ export function VOMSSection({ voms }: Props) {
                 {SYMPTOM_COLS.map(({ key }) => {
                   const change = t.changeScores[key];
                   return (
-                    <>
-                      <td key={`${key}-pre`}  className="text-center py-2.5 text-gray-500 text-xs border-l border-gray-100">{t.pre[key]}</td>
-                      <td key={`${key}-post`} className="text-center py-2.5 text-gray-500 text-xs">{t.post[key]}</td>
-                      <td key={`${key}-chg`}  className={clsx("text-center py-2.5 text-xs", changeStyle(change))}>
+                    <React.Fragment key={key}>
+                      <td className="text-center py-2.5 text-gray-500 text-xs border-l border-gray-100">{t.pre[key]}</td>
+                      <td className="text-center py-2.5 text-gray-500 text-xs">{t.post[key]}</td>
+                      <td className={clsx("text-center py-2.5 text-xs", changeStyle(change))}>
                         {change >= 0 ? "+" : ""}{change}
                       </td>
-                    </>
+                    </React.Fragment>
                   );
                 })}
                 <td className="text-center py-2.5 border-l border-gray-100">
