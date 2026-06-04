@@ -115,7 +115,7 @@ export default function AthleteDetailPage() {
               <YAxis domain={[0, 100]} tick={{ fontSize: 11 }}
                 label={{ value: "% of max", angle: -90, position: "insideLeft", fontSize: 10, fill: "#9ca3af" }} />
               <Tooltip
-                formatter={(value: number, name: string) => [`${value}%`, name]}
+                formatter={(value, name) => [`${value}%`, name as string]}
                 labelFormatter={(label, payload) => {
                   const p = (payload as unknown as Array<{ payload?: { date?: string; daysPi?: number } }>)?.[0]?.payload;
                   return p ? `${label} — ${p.date} (Day ${p.daysPi})` : label;
