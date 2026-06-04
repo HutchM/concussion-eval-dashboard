@@ -43,19 +43,26 @@ export default function AthletesPage() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-lg shrink-0">👤</div>
                     <div>
-                      <Link href={`/athletes/${athlete.id}`} className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
+                      <Link href={`/athletes/${athlete.id}`} className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors flex items-center gap-1.5 group">
                         {athlete.name}
+                        <span className="text-gray-300 group-hover:text-indigo-400 text-xs transition-colors">↗</span>
                       </Link>
                       <p className="text-xs text-gray-500">{athlete.sport}{athlete.position ? ` · ${athlete.position}` : ""}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     {flagCount > 0 && (
                       <span className="text-xs text-red-600 font-medium bg-red-50 px-2 py-1 rounded-full">
-                        🚩 {flagCount} flagged eval{flagCount > 1 ? "s" : ""}
+                        🚩 {flagCount} flagged
                       </span>
                     )}
-                    <span className="text-xs text-gray-400">{evals.length} evaluation{evals.length !== 1 ? "s" : ""}</span>
+                    <span className="text-xs text-gray-400">{evals.length} eval{evals.length !== 1 ? "s" : ""}</span>
+                    <Link
+                      href={`/athletes/${athlete.id}`}
+                      className="flex items-center gap-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      📈 History &amp; Trends
+                    </Link>
                     <Link
                       href={`/enter?athleteId=${athlete.id}`}
                       className="text-sm font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 hover:border-indigo-400 px-3 py-1.5 rounded-lg transition-colors"
