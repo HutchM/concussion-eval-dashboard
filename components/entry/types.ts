@@ -42,6 +42,4 @@ export interface EntryFormValues {
   stageRPE: Record<string, string>;
   // Stages 1–3: keyed by stageId, then taskName
   exertionalTasks: Record<string, Record<string, ExertionalTaskEntry>>;
-  // Stage 4: RPE + symptom (no tasks)
-  exertionalStage4: { rpe: string; symptomProvoked: string; symptoms: SymptomOccurrenceEntry[]; notes: string };
 }

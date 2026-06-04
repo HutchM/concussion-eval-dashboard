@@ -1,7 +1,7 @@
 "use client";
 import { UseFormRegister, useWatch, Control, UseFormWatch, UseFormSetValue, useFieldArray } from "react-hook-form";
 import { useRef, useState } from "react";
-import { EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES, IMMEDIATE_MEMORY_WORDS, SYMPTOM_LIST, HRDataPoint } from "@/types";
+import { EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES, STAGE4_TASK_NAMES, IMMEDIATE_MEMORY_WORDS, SYMPTOM_LIST, HRDataPoint } from "@/types";
 import type { EntryFormValues } from "./types";
 import { clsx } from "clsx";
 
@@ -34,6 +34,7 @@ const TASK_METRIC: Record<number, { label: string; field: "reps" | "duration"; p
   1: { label: "Reps",        field: "reps",     placeholder: "e.g. 10" },
   2: { label: "Time (secs)", field: "duration", placeholder: "e.g. 30" },
   3: { label: "Reps",        field: "reps",     placeholder: "e.g. 10" },
+  4: { label: "Reps",        field: "reps",     placeholder: "e.g. 12" },
 };
 
 function parseHRFile(text: string): HRDataPoint[] {
@@ -148,9 +149,10 @@ export function ExertionalEntryForm({ register, control, watch, setValue, onHRFi
         </div>
       </div>
 
-      {/* Stages 1–3 */}
-      {EXERTIONAL_STAGE_DEFS.filter((s) => s.hasTasks).map((stageDef, si) => {
+      {/* All stages */}
+      {EXERTIONAL_STAGE_DEFS.map((stageDef, si) => {
         const metric = TASK_METRIC[stageDef.id];
+        const taskList = stageDef.id === 4 ? STAGE4_TASK_NAMES : EXERTIONAL_TASK_NAMES;
         return (
           <div key={stageDef.id} className={clsx("rounded-xl border-2 overflow-hidden", STAGE_COLORS[si])}>
             <div className={clsx("px-4 py-3 flex items-center gap-2", STAGE_HEADER_COLORS[si])}>
@@ -238,7 +240,7 @@ export function ExertionalEntryForm({ register, control, watch, setValue, onHRFi
                   </tr>
                 </thead>
                 <tbody>
-                  {EXERTIONAL_TASK_NAMES.map((task) => (
+                  {taskList.map((task) => (
                     <tr key={task} className="border-b border-gray-100 last:border-0 align-top">
                       <td className="py-2.5 pr-3 font-medium text-gray-700 pt-3">{task}</td>
                       <td className="py-1.5 px-1 pt-2.5">
@@ -281,37 +283,6 @@ export function ExertionalEntryForm({ register, control, watch, setValue, onHRFi
           </div>
         );
       })}
-
-      {/* Stage 4 */}
-      <div className={clsx("rounded-xl border-2 overflow-hidden", STAGE_COLORS[3])}>
-        <div className={clsx("px-4 py-3 flex items-center gap-2", STAGE_HEADER_COLORS[3])}>
-          <span className="text-sm font-bold">Stage 4</span>
-          <span className="text-sm font-semibold">Multi-planar / High Exertion</span>
-        </div>
-        <div className="p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Symptom</label>
-              <TaskSymptomPicker fieldPrefix="exertionalStage4" register={register} control={control} />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Notes</label>
-              <input {...register("exertionalStage4.notes")} placeholder="optional" className={clsx(inputCls, "text-left")} />
-            </div>
-          </div>
-          {/* End-of-stage RPE */}
-          <div className="mt-4 pt-3 border-t border-gray-200 flex items-center gap-3">
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
-              End-of-stage RPE (6–20)
-            </label>
-            <input type="number" min="6" max="20"
-              {...register("exertionalStage4.rpe")}
-              placeholder="—"
-              className="w-20 rounded border border-gray-300 px-2 py-1.5 text-sm text-center focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
-            />
-          </div>
-        </div>
-      </div>
 
       {/* HR File Upload */}
       <div className="rounded-xl border-2 border-dashed border-gray-300 bg-white p-5">

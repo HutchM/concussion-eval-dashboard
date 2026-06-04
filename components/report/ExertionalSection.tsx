@@ -117,7 +117,7 @@ export function ExertionalSection({ exertional }: Props) {
               </div>
             )}
 
-            {stage.tasks.length > 0 ? (<>
+            {stage.tasks.length > 0 && (<>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-inherit">
@@ -125,6 +125,7 @@ export function ExertionalSection({ exertional }: Props) {
                     <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">
                       {stage.stageId === 2 ? "Time (secs)" : "Reps"}
                     </th>
+
                     <th className="text-center px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Symptom</th>
                     <th className="text-left px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Symptoms Reported</th>
                     <th className="text-left px-3 py-2 text-xs text-gray-400 font-medium uppercase tracking-wide">Notes</th>
@@ -166,30 +167,8 @@ export function ExertionalSection({ exertional }: Props) {
                   <span className="text-xs text-gray-400">/ 20</span>
                 </div>
               )}
-            </>) : (
-              <div className="px-4 py-3 grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-gray-400">End-of-stage RPE</p>
-                  <p className="font-medium text-gray-700">{stage.rpe ?? "—"}<span className="text-xs text-gray-400 ml-1">/ 20</span></p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Symptom</p>
-                  {stage.symptomProvoked
-                    ? <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Yes</span>
-                    : <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">No</span>
-                  }
-                </div>
-                {(stage.symptomDetails ?? []).length > 0 && (
-                  <div>
-                    <p className="text-xs text-gray-400 mb-0.5">Symptoms reported</p>
-                    {stage.symptomDetails!.map((d, i) => (
-                      <p key={i} className="text-xs text-gray-700">{d.symptom} <span className="text-orange-500 font-medium">↑{d.increase}</span></p>
-                    ))}
-                  </div>
-                )}
-                {stage.notes && <p className="col-span-3 text-xs text-gray-400 italic">{stage.notes}</p>}
-              </div>
-            )}
+            </>)}
+
           </div>
         ))}
 

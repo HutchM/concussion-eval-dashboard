@@ -98,14 +98,21 @@ export interface VOMSResults {
 // ─── Exertional Testing ────────────────────────────────────────────────────────
 
 export const EXERTIONAL_STAGE_DEFS = [
-  { id: 1, name: "Cardiovascular Load",          hasTasks: true  },
-  { id: 2, name: "Head Acceleration / Movement", hasTasks: true  },
-  { id: 3, name: "Dual Task",                    hasTasks: true  },
-  { id: 4, name: "Multi-planar / High Exertion", hasTasks: false },
+  { id: 1, name: "Cardiovascular Load",          hasTasks: true },
+  { id: 2, name: "Head Acceleration / Movement", hasTasks: true },
+  { id: 3, name: "Dual Task",                    hasTasks: true },
+  { id: 4, name: "Multi-planar / High Exertion", hasTasks: true },
 ] as const;
 
 export const EXERTIONAL_TASK_NAMES = ["Squats", "Lunges", "Hip Hinges"] as const;
-export type ExertionalTaskName = (typeof EXERTIONAL_TASK_NAMES)[number];
+export const STAGE4_TASK_NAMES = [
+  "12 Step Down Jumps",
+  "Box Jump Overs",
+  "Box Jump Overs with HLVT",
+] as const;
+export type ExertionalTaskName =
+  | (typeof EXERTIONAL_TASK_NAMES)[number]
+  | (typeof STAGE4_TASK_NAMES)[number];
 
 export interface SymptomOccurrence {
   symptom: string; // name from SYMPTOM_LIST

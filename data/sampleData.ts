@@ -144,8 +144,13 @@ export const SAMPLE_EVALUATIONS: Evaluation[] = [
         },
         {
           stageId: 4, stageName: "Multi-planar / High Exertion",
-          rpe: 16, tasks: [], symptomProvoked: false, symptomDetails: [],
-          notes: "Completed full protocol without significant symptom change.",
+          rpe: 16,
+          tasks: [
+            { task: "12 Step Down Jumps",       reps: 12, symptomProvoked: false, symptomDetails: [] },
+            { task: "Box Jump Overs",            reps: 10, symptomProvoked: false, symptomDetails: [] },
+            { task: "Box Jump Overs with HLVT",  reps: 10, symptomProvoked: false, symptomDetails: [] },
+          ],
+          notes: "Completed without significant symptom change.",
         },
       ],
       

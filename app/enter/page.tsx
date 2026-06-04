@@ -11,7 +11,7 @@ import { ExertionalEntryForm } from "@/components/entry/ExertionalEntryForm";
 import { Card } from "@/components/ui/Card";
 import { useEvaluationStore } from "@/store/evaluationStore";
 import { calculateSymptomResults, calculateVOMSResults, calculateExertionalResults, calcDaysSinceInjury, buildVOMSTestResult } from "@/lib/scoring";
-import { SYMPTOM_LIST, VOMS_TESTS, EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES, IMMEDIATE_MEMORY_WORDS } from "@/types";
+import { SYMPTOM_LIST, VOMS_TESTS, EXERTIONAL_STAGE_DEFS, EXERTIONAL_TASK_NAMES, STAGE4_TASK_NAMES, IMMEDIATE_MEMORY_WORDS } from "@/types";
 import type { SymptomScores, VOMSTestResult, ExertionalStageResult, HRDataPoint } from "@/types";
 import { clsx } from "clsx";
 
@@ -48,7 +48,6 @@ export default function EnterPage() {
       stopReason: "Protocol complete",
       stageRPE: {},
       exertionalTasks: {},
-      exertionalStage4: { rpe: "", symptomProvoked: "", symptoms: [], notes: "" },
       immediateMemory: { trial1: "", trial2: "", trial3: "" },
     },
   });
@@ -91,41 +90,31 @@ export default function EnterPage() {
       totalScore: t1 + t2 + t3,
     } : undefined;
 
-    const exertionalStages: ExertionalStageResult[] = [
-      ...EXERTIONAL_STAGE_DEFS.filter((s) => s.hasTasks).map((stageDef) => ({
-        stageId: stageDef.id,
-        stageName: stageDef.name,
-        ...(stageDef.id === 1 && immediateMemoryResult ? { immediateMemory: immediateMemoryResult } : {}),
-        rpe: data.stageRPE?.[stageDef.id] ? Number(data.stageRPE[stageDef.id]) : undefined,
-        tasks: EXERTIONAL_TASK_NAMES.map((task) => {
-          const entry = data.exertionalTasks?.[stageDef.id]?.[task];
-          const symptomProvoked = entry?.symptomProvoked === "yes";
-          const symptomDetails = symptomProvoked
-            ? (entry?.symptoms ?? [])
-                .filter((s: { name: string; increase: string }) => s.name)
-                .map((s: { name: string; increase: string }) => ({ symptom: s.name, increase: Number(s.increase) || 0 }))
-            : [];
-          const isStage2 = stageDef.id === 2;
-          const taskMetric = isStage2
-            ? { duration: entry?.duration ? Number(entry.duration) : undefined, reps: undefined }
-            : { reps: entry?.reps ? Number(entry.reps) : undefined, duration: undefined };
-          return { task, ...taskMetric, symptomProvoked, symptomDetails, notes: entry?.notes || undefined };
-        }).filter((t) => t.reps !== undefined || t.duration !== undefined || t.symptomProvoked),
-      })).filter((s) => s.tasks.length > 0),
-      ...(data.exertionalStage4?.rpe || data.exertionalStage4?.symptomProvoked === "yes" ? [{
-        stageId: 4,
-        stageName: "Multi-planar / High Exertion",
-        tasks: [] as ExertionalStageResult["tasks"],
-        rpe: data.exertionalStage4.rpe ? Number(data.exertionalStage4.rpe) : undefined,
-        symptomProvoked: data.exertionalStage4.symptomProvoked === "yes",
-        symptomDetails: data.exertionalStage4.symptomProvoked === "yes"
-          ? (data.exertionalStage4.symptoms ?? [])
+    const exertionalStages: ExertionalStageResult[] = EXERTIONAL_STAGE_DEFS.map((stageDef) => {
+      const taskList = stageDef.id === 4 ? STAGE4_TASK_NAMES : EXERTIONAL_TASK_NAMES;
+      const isStage2 = stageDef.id === 2;
+      const tasks = taskList.map((task) => {
+        const entry = data.exertionalTasks?.[stageDef.id]?.[task];
+        const symptomProvoked = entry?.symptomProvoked === "yes";
+        const symptomDetails = symptomProvoked
+          ? (entry?.symptoms ?? [])
               .filter((s: { name: string; increase: string }) => s.name)
               .map((s: { name: string; increase: string }) => ({ symptom: s.name, increase: Number(s.increase) || 0 }))
-          : [] as ExertionalStageResult["symptomDetails"],
-        notes: data.exertionalStage4.notes || undefined,
-      }] : []),
-    ];
+          : [];
+        const taskMetric = isStage2
+          ? { duration: entry?.duration ? Number(entry.duration) : undefined, reps: undefined }
+          : { reps: entry?.reps ? Number(entry.reps) : undefined, duration: undefined };
+        return { task, ...taskMetric, symptomProvoked, symptomDetails, notes: entry?.notes || undefined };
+      }).filter((t) => t.reps !== undefined || t.duration !== undefined || t.symptomProvoked);
+
+      return {
+        stageId: stageDef.id,
+        stageName: stageDef.name,
+        rpe: data.stageRPE?.[stageDef.id] ? Number(data.stageRPE[stageDef.id]) : undefined,
+        tasks,
+        ...(stageDef.id === 1 && immediateMemoryResult ? { immediateMemory: immediateMemoryResult } : {}),
+      };
+    }).filter((s) => s.tasks.length > 0 || s.rpe);
 
     const daysSinceInjury = calcDaysSinceInjury(data.injuryDate, data.evaluationDate);
 
