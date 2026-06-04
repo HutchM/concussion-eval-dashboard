@@ -111,7 +111,6 @@ export default function AthleteDetailPage() {
                   return p ? `${label} — ${p.date} (Day ${p.daysPi})` : label;
                 }}
               />
-              <Legend />
               {/* Stacked domain bars */}
               {SYMPTOM_CATEGORIES.filter((c) => c.name !== "Other").map((cat) => (
                 <Bar
