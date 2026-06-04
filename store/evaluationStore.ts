@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Evaluation } from "@/types";
+import type { Evaluation, Athlete } from "@/types";
 import { SAMPLE_EVALUATIONS } from "@/data/sampleData";
 
 interface EvaluationStore {
@@ -10,6 +10,9 @@ interface EvaluationStore {
   removeEvaluation: (id: string) => void;
   selectEvaluation: (id: string | null) => void;
   getEvaluation: (id: string) => Evaluation | undefined;
+  // Athlete-level helpers
+  getAthleteEvaluations: (athleteId: string) => Evaluation[];
+  getUniqueAthletes: () => Athlete[];
   loadSampleData: () => void;
 }
 
@@ -31,6 +34,19 @@ export const useEvaluationStore = create<EvaluationStore>()(
       selectEvaluation: (id) => set({ selectedId: id }),
 
       getEvaluation: (id) => get().evaluations.find((e) => e.id === id),
+
+      getAthleteEvaluations: (athleteId) =>
+        get()
+          .evaluations.filter((e) => e.athlete.id === athleteId)
+          .sort((a, b) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime()),
+
+      getUniqueAthletes: () => {
+        const seen = new Map<string, Athlete>();
+        for (const e of get().evaluations) {
+          if (!seen.has(e.athlete.id)) seen.set(e.athlete.id, e.athlete);
+        }
+        return Array.from(seen.values());
+      },
 
       loadSampleData: () => set({ evaluations: SAMPLE_EVALUATIONS }),
     }),

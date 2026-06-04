@@ -15,7 +15,7 @@ type View = "practitioner" | "patient";
 export default function ReportPage() {
   const params = useParams();
   const router = useRouter();
-  const { getEvaluation } = useEvaluationStore();
+  const { getEvaluation, getAthleteEvaluations } = useEvaluationStore();
   const [view, setView] = useState<View>("practitioner");
 
   const evaluation = getEvaluation(params.id as string);
@@ -25,24 +25,35 @@ export default function ReportPage() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <div className="text-4xl">🔍</div>
         <h2 className="text-xl font-bold text-gray-900">Evaluation not found</h2>
-        <button onClick={() => router.push("/")} className="text-indigo-600 underline text-sm">
-          Back to overview
-        </button>
+        <button onClick={() => router.push("/")} className="text-indigo-600 underline text-sm">Back to overview</button>
       </div>
     );
   }
+
+  const athleteEvals = getAthleteEvaluations(evaluation.athlete.id);
+  const evalIndex = athleteEvals.findIndex((e) => e.id === evaluation.id);
+  const evalLabel = evalIndex === 0 ? "Baseline" : `Follow-up ${evalIndex}`;
+  const totalEvals = athleteEvals.length;
 
   return (
     <div>
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <button onClick={() => router.back()} className="text-xs text-gray-400 hover:text-gray-600 mb-1 flex items-center gap-1">
-            ← Back
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">Evaluation Report</h1>
+          <div className="flex items-center gap-3 mb-1">
+            <button onClick={() => router.back()} className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">← Back</button>
+            <span className="text-xs text-gray-300">·</span>
+            <button onClick={() => router.push(`/athletes/${evaluation.athlete.id}`)} className="text-xs text-indigo-500 hover:text-indigo-700">
+              All evaluations for {evaluation.athlete.name} ({totalEvals})
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">Evaluation Report</h1>
+            <span className="text-sm font-medium text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">{evalLabel}</span>
+          </div>
           <p className="text-sm text-gray-500 mt-0.5">
             {new Date(evaluation.completedAt).toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+            {" · "}Day {evaluation.athlete.daysSinceInjury} post-injury
           </p>
         </div>
 
@@ -87,6 +98,32 @@ export default function ReportPage() {
       {/* Patient / athlete view */}
       {view === "patient" && (
         <PatientSummary evaluation={evaluation} />
+      )}
+
+      {/* Evaluation navigation — other evals for this athlete */}
+      {totalEvals > 1 && (
+        <div className="mt-6 border-t border-gray-200 pt-6">
+          <p className="text-xs text-gray-400 uppercase tracking-wide font-medium mb-3">Other evaluations for {evaluation.athlete.name}</p>
+          <div className="flex flex-wrap gap-2">
+            {athleteEvals.map((e, i) => (
+              <button
+                key={e.id}
+                onClick={() => router.push(`/report/${e.id}`)}
+                className={clsx(
+                  "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                  e.id === evaluation.id
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600"
+                )}
+              >
+                {i === 0 ? "Baseline" : `Follow-up ${i}`}
+                <span className="ml-1.5 text-xs opacity-70">
+                  Day {e.athlete.daysSinceInjury}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,7 +1,8 @@
 "use client";
+import { Suspense } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type { EntryFormValues } from "@/components/entry/types";
 import { AthleteForm } from "@/components/entry/AthleteForm";
@@ -30,16 +31,22 @@ function defaultVOMS() {
 }
 
 export default function EnterPage() {
+  return <Suspense><EnterPageInner /></Suspense>;
+}
+
+function EnterPageInner() {
   const router = useRouter();
-  const { addEvaluation } = useEvaluationStore();
+  const searchParams = useSearchParams();
+  const { addEvaluation, getUniqueAthletes, getAthleteEvaluations } = useEvaluationStore();
   const [step, setStep] = useState(0);
   const [saved, setSaved] = useState(false);
   const [hrFileData, setHrFileData] = useState<HRDataPoint[] | null>(null);
   const [hrFileName, setHrFileName] = useState<string | undefined>();
+  const [followUpAthleteId, setFollowUpAthleteId] = useState<string | null>(null);
 
   const today = new Date().toISOString().split("T")[0];
 
-  const { register, control, watch, setValue, handleSubmit, formState: { errors } } = useForm<EntryFormValues>({
+  const { register, control, watch, setValue, reset, handleSubmit, formState: { errors } } = useForm<EntryFormValues>({
     defaultValues: {
       evaluationDate: today,
       symptoms: defaultSymptoms(),
@@ -51,6 +58,31 @@ export default function EnterPage() {
       immediateMemory: { trial1: "", trial2: "", trial3: "" },
     },
   });
+
+  // Pre-fill profile when coming from a follow-up link
+  useEffect(() => {
+    const athleteId = searchParams.get("athleteId");
+    if (!athleteId) return;
+    const athlete = getUniqueAthletes().find((a) => a.id === athleteId);
+    if (!athlete) return;
+    setFollowUpAthleteId(athleteId);
+    reset({
+      athleteName: athlete.name,
+      dateOfBirth: athlete.dateOfBirth,
+      sport: athlete.sport,
+      position: athlete.position ?? "",
+      injuryDate: athlete.injuryDate,
+      evaluationDate: today,
+      symptoms: defaultSymptoms(),
+      percentageOfNormal: "80",
+      voms: defaultVOMS(),
+      stopReason: "Protocol complete",
+      stageRPE: {},
+      exertionalTasks: {},
+      immediateMemory: { trial1: "", trial2: "", trial3: "" },
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit = (data: EntryFormValues) => {
     // Build typed objects
@@ -121,7 +153,7 @@ export default function EnterPage() {
     const evaluation = {
       id: `eval-${uuidv4()}`,
       athlete: {
-        id: `ath-${uuidv4()}`,
+        id: followUpAthleteId ?? `ath-${uuidv4()}`,
         name: data.athleteName,
         dateOfBirth: data.dateOfBirth,
         sport: data.sport,

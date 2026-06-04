@@ -1,33 +1,22 @@
 "use client";
 import { useEvaluationStore } from "@/store/evaluationStore";
-import { Card, CardHeader } from "@/components/ui/Card";
 import { severityBadge, flagBadge, toleranceBadge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
 import Link from "next/link";
+import { clsx } from "clsx";
 
 export default function AthletesPage() {
-  const { evaluations } = useEvaluationStore();
-
-  // Group by athlete id — show latest eval per athlete
-  const byAthlete = new Map<string, typeof evaluations[0]>();
-  for (const e of evaluations) {
-    const existing = byAthlete.get(e.athlete.id);
-    if (!existing || new Date(e.completedAt) > new Date(existing.completedAt)) {
-      byAthlete.set(e.athlete.id, e);
-    }
-  }
-  const athletes = Array.from(byAthlete.values());
+  const { getUniqueAthletes, getAthleteEvaluations } = useEvaluationStore();
+  const athletes = getUniqueAthletes();
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Athletes</h1>
-          <p className="text-sm text-gray-500 mt-1">Most recent evaluation per athlete</p>
+          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
+          <p className="text-sm text-gray-500 mt-1">{athletes.length} athlete{athletes.length !== 1 ? "s" : ""} — click a name to view their full history</p>
         </div>
-        <Link
-          href="/enter"
-          className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
+        <Link href="/enter" className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
           + New Evaluation
         </Link>
       </div>
@@ -37,51 +26,77 @@ export default function AthletesPage() {
           <p className="text-sm text-gray-400">No athletes yet. <Link href="/enter" className="text-indigo-600 underline">Add an evaluation.</Link></p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {athletes.map((e) => {
-            const flagCount = [
-              e.symptoms.severityCategory === "Severe" || e.symptoms.severityCategory === "Moderate",
-              e.voms.overallFlag !== "Pass",
-              e.exertional.exertionalTolerance !== "Full",
-            ].filter(Boolean).length;
+        <div className="space-y-4">
+          {athletes.map((athlete) => {
+            const evals = getAthleteEvaluations(athlete.id);
+            const latest = evals[evals.length - 1];
+            const flagCount = evals.filter((e) =>
+              e.symptoms.severityCategory === "Severe" ||
+              e.voms.overallFlag === "Flag" ||
+              e.exertional.exertionalTolerance === "Unable to complete"
+            ).length;
 
             return (
-              <Link key={e.athlete.id} href={`/report/${e.id}`} className="block">
-                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-                  <div className="flex items-start gap-3 mb-4">
+              <Card key={athlete.id} padding={false}>
+                {/* Athlete header */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-lg shrink-0">👤</div>
-                    <div className="min-w-0">
-                      <p className="font-semibold text-gray-900 truncate">{e.athlete.name}</p>
-                      <p className="text-xs text-gray-500">{e.athlete.sport}{e.athlete.position ? ` · ${e.athlete.position}` : ""}</p>
+                    <div>
+                      <Link href={`/athletes/${athlete.id}`} className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
+                        {athlete.name}
+                      </Link>
+                      <p className="text-xs text-gray-500">{athlete.sport}{athlete.position ? ` · ${athlete.position}` : ""}</p>
                     </div>
                   </div>
-
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Days post-injury</span>
-                      <span className="font-semibold text-indigo-600">{e.athlete.daysSinceInjury}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Symptoms</span>
-                      {severityBadge(e.symptoms.severityCategory)}
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">VOMS</span>
-                      {flagBadge(e.voms.overallFlag)}
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Exertional</span>
-                      {toleranceBadge(e.exertional.exertionalTolerance)}
-                    </div>
+                  <div className="flex items-center gap-3">
+                    {flagCount > 0 && (
+                      <span className="text-xs text-red-600 font-medium bg-red-50 px-2 py-1 rounded-full">
+                        🚩 {flagCount} flagged eval{flagCount > 1 ? "s" : ""}
+                      </span>
+                    )}
+                    <span className="text-xs text-gray-400">{evals.length} evaluation{evals.length !== 1 ? "s" : ""}</span>
+                    <Link
+                      href={`/enter?athleteId=${athlete.id}`}
+                      className="text-sm font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 hover:border-indigo-400 px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      + Follow-up
+                    </Link>
                   </div>
+                </div>
 
-                  {flagCount > 0 && (
-                    <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-red-600 font-medium">
-                      🚩 {flagCount} domain{flagCount > 1 ? "s" : ""} flagged — review recommended
-                    </div>
-                  )}
-                </Card>
-              </Link>
+                {/* Evaluation timeline */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        {["#", "Date", "Days P.I.", "Symptoms", "VOMS", "Exertional", ""].map((h) => (
+                          <th key={h} className="px-4 py-2 text-left text-xs text-gray-400 font-medium uppercase tracking-wide">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {evals.map((e, i) => (
+                        <tr key={e.id} className={clsx("border-t border-gray-50 hover:bg-gray-50 transition-colors", i === evals.length - 1 && "font-medium")}>
+                          <td className="px-4 py-2.5 text-gray-400 text-xs">
+                            {i === 0 ? "Baseline" : `Follow-up ${i}`}
+                          </td>
+                          <td className="px-4 py-2.5 text-gray-700">
+                            {new Date(e.completedAt).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
+                          </td>
+                          <td className="px-4 py-2.5 text-gray-600">{e.athlete.daysSinceInjury}</td>
+                          <td className="px-4 py-2.5">{severityBadge(e.symptoms.severityCategory)}</td>
+                          <td className="px-4 py-2.5">{flagBadge(e.voms.overallFlag)}</td>
+                          <td className="px-4 py-2.5">{toleranceBadge(e.exertional.exertionalTolerance)}</td>
+                          <td className="px-4 py-2.5">
+                            <Link href={`/report/${e.id}`} className="text-indigo-600 hover:text-indigo-800 text-xs font-medium">View →</Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
             );
           })}
         </div>
