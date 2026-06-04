@@ -5,7 +5,8 @@ import { useEvaluationStore } from "@/store/evaluationStore";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { severityBadge, flagBadge, toleranceBadge } from "@/components/ui/Badge";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Legend, LineChart,
 } from "recharts";
 import { SYMPTOM_CATEGORIES, categoryScore, categoryMax, CATEGORY_STYLES } from "@/lib/symptomCategories";
 
@@ -28,20 +29,18 @@ export default function AthleteDetailPage() {
 
   const age = new Date().getFullYear() - new Date(athlete.dateOfBirth).getFullYear();
 
-  // Build trend data — overall + per-category (as % of max for comparability)
+  // Build trend data — raw domain scores + % normal per evaluation
   const trendData = evals.map((e, i) => {
     const categoryData: Record<string, number> = {};
-    for (const cat of SYMPTOM_CATEGORIES) {
-      const score = categoryScore(cat, e.symptoms.scores);
-      const max = categoryMax(cat);
-      categoryData[cat.name] = max > 0 ? Math.round((score / max) * 100) : 0;
+    for (const cat of SYMPTOM_CATEGORIES.filter((c) => c.name !== "Other")) {
+      categoryData[cat.name] = categoryScore(cat, e.symptoms.scores);
     }
     return {
       label: i === 0 ? "Baseline" : `FU ${i}`,
       date: new Date(e.completedAt).toLocaleDateString("en-AU", { day: "numeric", month: "short" }),
       daysPi: e.athlete.daysSinceInjury,
       symptomScore: e.symptoms.totalSeverity,
-      pctNormal: e.symptoms.percentageOfNormal,
+      pctNormal: e.symptoms.percentageOfNormal ?? null,
       evalId: e.id,
       ...categoryData,
     };
@@ -75,80 +74,83 @@ export default function AthleteDetailPage() {
         </Link>
       </div>
 
-      {/* Trend chart */}
-      {evals.length > 1 && (
-        <Card className="mb-6">
-          <CardHeader title="Recovery Trends" subtitle="Key metrics across all evaluations" />
-          <ResponsiveContainer width="100%" height={240}>
-            <LineChart data={trendData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-              <YAxis yAxisId="score" orientation="left" domain={[0, 132]} tick={{ fontSize: 11 }}
-                label={{ value: "Symptom score", angle: -90, position: "insideLeft", fontSize: 10, fill: "#9ca3af" }} />
-              <YAxis yAxisId="pct" orientation="right" domain={[0, 100]} tick={{ fontSize: 11 }}
-                label={{ value: "% Normal", angle: 90, position: "insideRight", fontSize: 10, fill: "#9ca3af" }} />
-              <Tooltip
-                labelFormatter={(label, payload) => {
-                  const p = (payload as unknown as Array<{ payload?: { date?: string; daysPi?: number } }>)?.[0]?.payload;
-                  return p ? `${label} — ${p.date} (Day ${p.daysPi})` : label;
-                }}
-              />
-              <Legend />
-              <Line yAxisId="score" type="monotone" dataKey="symptomScore" stroke="#ef4444" strokeWidth={2} dot={{ r: 5 }} name="Symptom score" />
-              <Line yAxisId="pct" type="monotone" dataKey="pctNormal" stroke="#10b981" strokeWidth={2} dot={{ r: 5 }} name="% Feeling normal" strokeDasharray="5 5" />
-            </LineChart>
-          </ResponsiveContainer>
-        </Card>
-      )}
-
-      {/* Symptom domain trends */}
+      {/* Combined symptom domain + % normal chart */}
       {evals.length > 1 && (
         <Card className="mb-6">
           <CardHeader
-            title="Symptom Domain Trends"
-            subtitle="Score as % of domain maximum across evaluations"
+            title="Recovery Trends"
+            subtitle="Symptom scores by domain (stacked bars) and % feeling normal (dashed line)"
           />
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={trendData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={trendData} margin={{ top: 5, right: 50, bottom: 5, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 11 }}
-                label={{ value: "% of max", angle: -90, position: "insideLeft", fontSize: 10, fill: "#9ca3af" }} />
+              {/* Left axis — symptom score */}
+              <YAxis
+                yAxisId="score"
+                orientation="left"
+                domain={[0, 132]}
+                tick={{ fontSize: 11 }}
+                label={{ value: "Symptom score", angle: -90, position: "insideLeft", fontSize: 10, fill: "#9ca3af" }}
+              />
+              {/* Right axis — % normal */}
+              <YAxis
+                yAxisId="pct"
+                orientation="right"
+                domain={[0, 100]}
+                tick={{ fontSize: 11 }}
+                label={{ value: "% Normal", angle: 90, position: "insideRight", fontSize: 10, fill: "#9ca3af" }}
+              />
               <Tooltip
-                formatter={(value, name) => [`${value}%`, name as string]}
+                formatter={(value, name) => [
+                  name === "% Feeling normal" ? `${value}%` : `${value} pts`,
+                  name as string,
+                ]}
                 labelFormatter={(label, payload) => {
                   const p = (payload as unknown as Array<{ payload?: { date?: string; daysPi?: number } }>)?.[0]?.payload;
                   return p ? `${label} — ${p.date} (Day ${p.daysPi})` : label;
                 }}
               />
               <Legend />
+              {/* Stacked domain bars */}
               {SYMPTOM_CATEGORIES.filter((c) => c.name !== "Other").map((cat) => (
-                <Line
+                <Bar
                   key={cat.name}
-                  type="monotone"
+                  yAxisId="score"
                   dataKey={cat.name}
-                  stroke={CATEGORY_STYLES[cat.color].bar}
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
+                  stackId="symptoms"
+                  fill={CATEGORY_STYLES[cat.color].bar}
                   name={cat.name}
+                  radius={cat.name === "Sleep" ? [3, 3, 0, 0] : [0, 0, 0, 0]}
                 />
               ))}
-              {/* % Feeling normal overlay */}
+              {/* % Feeling normal line */}
               <Line
+                yAxisId="pct"
                 type="monotone"
                 dataKey="pctNormal"
-                stroke="#6b7280"
-                strokeWidth={2}
+                stroke="#374151"
+                strokeWidth={2.5}
                 strokeDasharray="6 3"
-                dot={{ r: 4 }}
+                dot={{ r: 5, fill: "#374151" }}
                 name="% Feeling normal"
+                connectNulls
               />
-            </LineChart>
+            </ComposedChart>
           </ResponsiveContainer>
-          <p className="text-xs text-gray-400 px-2 pb-2">
-            Each domain score is shown as a percentage of its maximum possible score, so all domains are directly comparable on the same axis.
-          </p>
+          {/* Domain colour legend */}
+          <div className="flex flex-wrap gap-3 px-4 pb-4 pt-1">
+            {SYMPTOM_CATEGORIES.filter((c) => c.name !== "Other").map((cat) => (
+              <span key={cat.name} className="flex items-center gap-1.5 text-xs text-gray-600">
+                <span className="w-3 h-3 rounded-sm inline-block shrink-0" style={{ backgroundColor: CATEGORY_STYLES[cat.color].bar }} />
+                {cat.name}
+              </span>
+            ))}
+            <span className="flex items-center gap-1.5 text-xs text-gray-600">
+              <span className="w-6 border-t-2 border-dashed border-gray-700 inline-block" />
+              % Feeling normal
+            </span>
+          </div>
         </Card>
       )}
 
