@@ -7,6 +7,7 @@ import { severityBadge, flagBadge, toleranceBadge } from "@/components/ui/Badge"
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
+import { SYMPTOM_CATEGORIES, categoryScore, categoryMax, CATEGORY_STYLES } from "@/lib/symptomCategories";
 
 export default function AthleteDetailPage() {
   const params = useParams();
@@ -27,17 +28,24 @@ export default function AthleteDetailPage() {
 
   const age = new Date().getFullYear() - new Date(athlete.dateOfBirth).getFullYear();
 
-  // Build trend data for the chart
-  const trendData = evals.map((e, i) => ({
-    label: i === 0 ? "Baseline" : `FU ${i}`,
-    date: new Date(e.completedAt).toLocaleDateString("en-AU", { day: "numeric", month: "short" }),
-    daysPi: e.athlete.daysSinceInjury,
-    symptomScore: e.symptoms.totalSeverity,
-    symptomCount: e.symptoms.totalCount,
-    vomsProvoked: e.voms.provokedCount,
-    pctNormal: e.symptoms.percentageOfNormal,
-    evalId: e.id,
-  }));
+  // Build trend data — overall + per-category (as % of max for comparability)
+  const trendData = evals.map((e, i) => {
+    const categoryData: Record<string, number> = {};
+    for (const cat of SYMPTOM_CATEGORIES) {
+      const score = categoryScore(cat, e.symptoms.scores);
+      const max = categoryMax(cat);
+      categoryData[cat.name] = max > 0 ? Math.round((score / max) * 100) : 0;
+    }
+    return {
+      label: i === 0 ? "Baseline" : `FU ${i}`,
+      date: new Date(e.completedAt).toLocaleDateString("en-AU", { day: "numeric", month: "short" }),
+      daysPi: e.athlete.daysSinceInjury,
+      symptomScore: e.symptoms.totalSeverity,
+      pctNormal: e.symptoms.percentageOfNormal,
+      evalId: e.id,
+      ...categoryData,
+    };
+  });
 
   return (
     <div>
@@ -90,6 +98,57 @@ export default function AthleteDetailPage() {
               <Line yAxisId="pct" type="monotone" dataKey="pctNormal" stroke="#10b981" strokeWidth={2} dot={{ r: 5 }} name="% Feeling normal" strokeDasharray="5 5" />
             </LineChart>
           </ResponsiveContainer>
+        </Card>
+      )}
+
+      {/* Symptom domain trends */}
+      {evals.length > 1 && (
+        <Card className="mb-6">
+          <CardHeader
+            title="Symptom Domain Trends"
+            subtitle="Score as % of domain maximum across evaluations"
+          />
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart data={trendData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 11 }}
+                label={{ value: "% of max", angle: -90, position: "insideLeft", fontSize: 10, fill: "#9ca3af" }} />
+              <Tooltip
+                formatter={(value: number, name: string) => [`${value}%`, name]}
+                labelFormatter={(label, payload) => {
+                  const p = (payload as unknown as Array<{ payload?: { date?: string; daysPi?: number } }>)?.[0]?.payload;
+                  return p ? `${label} — ${p.date} (Day ${p.daysPi})` : label;
+                }}
+              />
+              <Legend />
+              {SYMPTOM_CATEGORIES.filter((c) => c.name !== "Other").map((cat) => (
+                <Line
+                  key={cat.name}
+                  type="monotone"
+                  dataKey={cat.name}
+                  stroke={CATEGORY_STYLES[cat.color].bar}
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                  name={cat.name}
+                />
+              ))}
+              {/* % Feeling normal overlay */}
+              <Line
+                type="monotone"
+                dataKey="pctNormal"
+                stroke="#6b7280"
+                strokeWidth={2}
+                strokeDasharray="6 3"
+                dot={{ r: 4 }}
+                name="% Feeling normal"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+          <p className="text-xs text-gray-400 px-2 pb-2">
+            Each domain score is shown as a percentage of its maximum possible score, so all domains are directly comparable on the same axis.
+          </p>
         </Card>
       )}
 
